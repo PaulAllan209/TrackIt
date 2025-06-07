@@ -37,10 +37,12 @@ var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
     options.UseSqlServer(connectionString, b => b.MigrationsAssembly(migrationsAssembly));
+
+    // Register the entity sets needed by OpenIddict.
     options.UseOpenIddict();
 });
 
-// Add Identity
+// Register the Identity services.
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -71,7 +73,8 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.ClaimsIdentity.EmailClaimType = Claims.Email;
 });
 
-// Configure OpenIddict periodic pruning of orphaned authorizations/tokens from the database.
+// OpenIddict offers native integration with Quartz.NET to perform scheduled tasks
+// Configure OpenIddict periodic pruning of orphaned authorizations/tokens from the database
 builder.Services.AddQuartz(options =>
 {
     options.UseSimpleTypeLoader();
@@ -91,6 +94,7 @@ builder.Services.AddOpenIddict()
     })
     .AddServer(options =>
     {
+        // Enable the token endpoint
         options.SetTokenEndpointUris("connect/token");
 
         options.AllowPasswordFlow()
@@ -103,32 +107,11 @@ builder.Services.AddOpenIddict()
             Scopes.Phone,
             Scopes.Roles);
 
-        if (builder.Environment.IsDevelopment())
-        {
-            options.AddDevelopmentEncryptionCertificate()
-                   .AddDevelopmentSigningCertificate();
-        }
-        else
-        {
-            var oidcCertFileName = builder.Configuration["OIDC:Certificates:Path"];
-            var oidcCertFilePassword = builder.Configuration["OIDC:Certificates:Password"];
-
-            if (string.IsNullOrWhiteSpace(oidcCertFileName))
-            {
-                // You must configure persisted keys for Encryption and Signing.
-                // See https://documentation.openiddict.com/configuration/encryption-and-signing-credentials.html
-                options.AddEphemeralEncryptionKey()
-                       .AddEphemeralSigningKey();
-            }
-            else
-            {
-                var oidcCertificate = X509CertificateLoader.LoadPkcs12FromFile(oidcCertFileName, oidcCertFilePassword);
-
-                options.AddEncryptionCertificate(oidcCertificate)
-                       .AddSigningCertificate(oidcCertificate);
-            }
-        }
-
+        // Register the signing and encryption credentials.
+        options.AddDevelopmentEncryptionCertificate()
+                .AddDevelopmentSigningCertificate();
+        
+        // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
         options.UseAspNetCore()
                .EnableTokenEndpointPassthrough();
     })
