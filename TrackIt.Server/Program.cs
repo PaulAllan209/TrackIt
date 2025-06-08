@@ -1,15 +1,10 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
+using Serilog;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
 using Quartz;
@@ -27,6 +22,11 @@ using static OpenIddict.Abstractions.OpenIddictConstants;
 var builder = WebApplication.CreateBuilder(args);
 
 /************* ADD SERVICES *************/
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                 throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -201,7 +201,8 @@ builder.Services.AddSingleton<IAuthorizationHandler, AssignRolesAuthorizationHan
 builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 
 //File Logger
-builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
+builder.Host.UseSerilog();
+//builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
 
 
 var app = builder.Build();
