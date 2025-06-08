@@ -2,8 +2,14 @@
 WORKDIR /app
 EXPOSE 80
 
+# Library needed for SQL Server authentication
+# Make sure to install libraries like this in the final runtime image (base/final stage)
+RUN apt-get update && apt-get install -y libgssapi-krb5-2
+
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
+
+
 
 # Copy proj files
 COPY ["TrackIt.Server/TrackIt.Server.csproj", "TrackIt.Server/"]

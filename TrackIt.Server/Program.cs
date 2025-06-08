@@ -208,6 +208,9 @@ var app = builder.Build();
 
 /************* CONFIGURE REQUEST PIPELINE *************/
 
+// Enables serving static files (e.g., index.html, CSS, JS) from wwwroot or the configured static files directory.
+// UseDefaultFiles() rewrites requests to the default file (like index.html) if no file is specified in the URL.
+// MapStaticAssets() is a custom extension (likely wraps UseStaticFiles) to serve static assets for the SPA frontend.
 app.UseDefaultFiles();
 app.MapStaticAssets();
 
