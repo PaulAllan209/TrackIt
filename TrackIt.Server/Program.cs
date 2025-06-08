@@ -22,7 +22,6 @@ using TrackIt.Server.Authorization;
 using TrackIt.Server.Authorization.Requirements;
 using TrackIt.Server.Configuration;
 using TrackIt.Server.Services;
-using TrackIt.Server.Services.Email;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -52,18 +51,19 @@ builder.Services.Configure<IdentityOptions>(options =>
 {
     // User settings
     options.User.RequireUniqueEmail = true;
-
-    // Password settings
-    /*
     options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 8;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = false;
 
-    // Lockout settings
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
     options.Lockout.MaxFailedAccessAttempts = 10;
+
+    // Password settings
+    /*
+    options.Password.RequiredLength = 8;
+
+    // Lockout settings
     */
 
     // Configure Identity to use the same JWT claims as OpenIddict
@@ -115,9 +115,13 @@ builder.Services.AddOpenIddict()
         options.UseAspNetCore()
                .EnableTokenEndpointPassthrough();
     })
+    // Register the OpenIddict validation components.
     .AddValidation(options =>
     {
+        // Import the configuration from the local OpenIddict server instance.
         options.UseLocalServer();
+
+        // Register the ASP.NET Core host.
         options.UseAspNetCore();
     });
 
@@ -152,8 +156,14 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
+    // Adds a Swagger document with metadata (title, version)
     c.SwaggerDoc("v1", new OpenApiInfo { Title = OidcServerConfig.ServerName, Version = "v1" });
+
+    // Adds a custom operation filter to mark endpoints that require authorization
+    // (e.g., adds a lock icon, 401 responses, and security requirements in the docs
     c.OperationFilter<SwaggerAuthorizeOperationFilter>();
+
+    // Adds an OAuth2 security definition for the Swagger UI
     c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
     {
         Type = SecuritySchemeType.OAuth2,
@@ -170,7 +180,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Configurations
-builder.Services.Configure<AppSettings>(builder.Configuration);
 
 // Business Services
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
@@ -180,7 +189,6 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IOrdersService, OrdersService>();
 
 // Other Services
-builder.Services.AddScoped<IEmailSender, EmailSender>();
 builder.Services.AddScoped<IUserIdAccessor, UserIdAccessor>();
 
 // Auth Handlers
@@ -195,8 +203,6 @@ builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 //File Logger
 builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
 
-//Email Templates
-EmailTemplates.Initialize(builder.Environment);
 
 var app = builder.Build();
 

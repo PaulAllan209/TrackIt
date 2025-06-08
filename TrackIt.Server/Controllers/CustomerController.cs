@@ -8,7 +8,6 @@ using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using TrackIt.Core.Services;
 using TrackIt.Core.Services.Shop;
-using TrackIt.Server.Services.Email;
 using TrackIt.Server.ViewModels.Shop;
 
 namespace TrackIt.Server.Controllers
@@ -19,15 +18,12 @@ namespace TrackIt.Server.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ILogger _logger;
-        private readonly IEmailSender _emailSender;
         private readonly ICustomerService _customerService;
 
-        public CustomerController(IMapper mapper, ILogger<CustomerController> logger, IEmailSender emailSender,
-            ICustomerService customerService)
+        public CustomerController(IMapper mapper, ILogger<CustomerController> logger, ICustomerService customerService)
         {
             _mapper = mapper;
             _logger = logger;
-            _emailSender = emailSender;
             _customerService = customerService;
         }
 
@@ -42,23 +38,6 @@ namespace TrackIt.Server.Controllers
         public IEnumerable<CustomerVM> Throw()
         {
             throw new CustomerException($"This is a test exception: {DateTime.Now}");
-        }
-
-        [HttpGet("email")]
-        public async Task<string> Email()
-        {
-            var recipientName = "QickApp Tester"; //         <===== Put the recipient's name here
-            var recipientEmail = "test@ebenmonney.com"; //   <===== Put the recipient's email here
-
-            var message = EmailTemplates.GetTestEmail(recipientName, DateTime.UtcNow);
-
-            (var success, var errorMsg) = await _emailSender.SendEmailAsync(recipientName, recipientEmail,
-                "Test Email from TrackIt", message);
-
-            if (success)
-                return "Success";
-
-            return $"Error: {errorMsg}";
         }
 
         [HttpGet("{id}")]

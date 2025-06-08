@@ -46,10 +46,4 @@
     <ProjectReference Include="..\TrackIt.Core\TrackIt.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Services\Email\*.template">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
