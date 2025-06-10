@@ -18,6 +18,7 @@ using TrackIt.Server.Authorization.Requirements;
 using TrackIt.Server.Configuration;
 using TrackIt.Server.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
+using TrackIt.Server.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -207,6 +208,10 @@ builder.Host.UseSerilog();
 
 var app = builder.Build();
 
+// Global exception handling
+var logger = app.Services.GetRequiredService<ILogger<Program>>();
+app.ConfigureExceptionHandler(logger);
+
 /************* CONFIGURE REQUEST PIPELINE *************/
 
 // Enables serving static files (e.g., index.html, CSS, JS) from wwwroot or the configured static files directory.
@@ -260,7 +265,6 @@ try
 }
 catch (Exception ex)
 {
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
     logger.LogCritical(ex, "An error occurred whilst creating/seeding database");
 
     throw;
