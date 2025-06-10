@@ -254,6 +254,9 @@ app.UseCors(builder => builder
     .AllowAnyHeader()
     .AllowAnyMethod());
 
+// Use security headers middleware
+app.UseMiddleware<SecurityHeadersMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
