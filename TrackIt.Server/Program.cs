@@ -19,6 +19,7 @@ using TrackIt.Server.Configuration;
 using TrackIt.Server.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using TrackIt.Server.Extensions;
+using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     // Register the entity sets needed by OpenIddict.
     options.UseOpenIddict();
 });
+
+// For Rate Limiting
+builder.Services.AddMemoryCache();
+builder.Services.ConfigureRateLimitingOptions();
+builder.Services.AddHttpContextAccessor();
 
 // Register the Identity services.
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
@@ -240,6 +246,8 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.UseIpRateLimiting();
 
 app.UseCors(builder => builder
     .AllowAnyOrigin()
