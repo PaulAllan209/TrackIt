@@ -189,9 +189,6 @@ namespace TrackIt.Core.Services.Account
         {
             var errors = new List<string>();
 
-            if (await _context.Orders.Where(o => o.CashierId == userId).AnyAsync())
-                errors.Add("User has associated orders");
-
             //canDelete = !await ; //Do other tests...
 
             return (errors.Count == 0, errors.ToArray());

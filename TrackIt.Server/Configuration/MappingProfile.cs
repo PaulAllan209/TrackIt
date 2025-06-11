@@ -7,10 +7,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using TrackIt.Core.Models.Account;
-using TrackIt.Core.Models.Shop;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.ViewModels.Account;
-using TrackIt.Server.ViewModels.Shop;
 
 namespace TrackIt.Server.Configuration
 {
@@ -50,15 +48,6 @@ namespace TrackIt.Server.Configuration
 
             CreateMap<IdentityRoleClaim<string>, PermissionVM>()
                 .ConvertUsing(s => ((PermissionVM)ApplicationPermissions.GetPermissionByValue(s.ClaimValue))!);
-
-            CreateMap<Customer, CustomerVM>()
-                .ReverseMap();
-
-            CreateMap<Product, ProductVM>()
-                .ReverseMap();
-
-            CreateMap<Order, OrderVM>()
-                .ReverseMap();
         }
     }
 }

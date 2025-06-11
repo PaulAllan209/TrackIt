@@ -12,7 +12,6 @@ using TrackIt.Core.Infrastructure;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Services;
 using TrackIt.Core.Services.Account;
-using TrackIt.Core.Services.Shop;
 using TrackIt.Server.Authorization;
 using TrackIt.Server.Authorization.Requirements;
 using TrackIt.Server.Configuration;
@@ -191,9 +190,6 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Business Services
 builder.Services.AddScoped<IUserAccountService, UserAccountService>();
 builder.Services.AddScoped<IUserRoleService, UserRoleService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IOrdersService, OrdersService>();
 
 // Other Services
 builder.Services.AddScoped<IUserIdAccessor, UserIdAccessor>();
