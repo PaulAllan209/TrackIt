@@ -36,7 +36,9 @@ namespace TrackIt.Core.Models.Account
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
 
-        public ICollection<Shipment> Shipments { get; set; }
+        public ICollection<Shipment> SupplierShipments { get; set; }
+        public ICollection<Shipment> RecipientShipments { get; set; }
+
 
         /// <summary>
         /// Navigation property for the roles this user belongs to.

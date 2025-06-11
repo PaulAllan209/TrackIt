@@ -11,12 +11,14 @@ namespace TrackIt.Core.Models.TrackIt
     public class Shipment : IAuditableEntity
     {
         public Guid Id { get; set; }
+
         public string SupplierId { get; set; }
+        public ApplicationUser Supplier { get; set; }
 
         public string RecipientName { get; set; }
         public string RecipientAddress { get; set; }
-        public string ApplicationUserId { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
+        public string RecipientId { get; set; }
+        public ApplicationUser Recipient { get; set; }
 
         public ShipmentStatus CurrentStatus { get; set; }
         public DateTime? DeliveredAt { get; set; }

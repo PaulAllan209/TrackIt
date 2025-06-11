@@ -46,11 +46,18 @@ namespace TrackIt.Core.Infrastructure
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<ApplicationUser>()
-                .HasMany(u => u.Shipments)
-                .WithOne(s => s.ApplicationUser)
-                .HasForeignKey(s => s.ApplicationUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Shipment>()
+                .HasOne(s => s.Supplier)
+                .WithMany(u => u.SupplierShipments)
+                .HasForeignKey(s => s.SupplierId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Shipment>()
+                .HasOne(s => s.Recipient)
+                .WithMany(u => u.RecipientShipments)
+                .HasForeignKey(s => s.RecipientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<Shipment>()
                 .HasMany(s => s.StatusUpdates)
                 .WithOne(su => su.Shipment)
