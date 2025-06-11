@@ -25,11 +25,23 @@ namespace TrackIt.Core.Infrastructure
 
                 const string adminRoleName = "administrator";
                 const string userRoleName = "user";
+                const string supplierRoleName = "supplier";
+                const string facilityRoleName = "facility";
+                const string deliveryRoleName = "delivery";
+                const string customerRoleName = "customer";
 
                 await EnsureRoleAsync(adminRoleName, "Default administrator",
                     ApplicationPermissions.GetAllPermissionValues());
 
                 await EnsureRoleAsync(userRoleName, "Default user", []);
+
+                await EnsureRoleAsync(supplierRoleName, "The supplier role", []);
+
+                await EnsureRoleAsync(facilityRoleName, "The facility role", []);
+
+                await EnsureRoleAsync(deliveryRoleName, "The delivery role", []);
+
+                await EnsureRoleAsync(customerRoleName, "The customer role", []);
 
                 await CreateUserAsync("admin",
                                       "tempP@ss123",

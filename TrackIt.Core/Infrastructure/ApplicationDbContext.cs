@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TrackIt.Core.Models;
 using TrackIt.Core.Models.Account;
+using TrackIt.Core.Models.TrackIt;
 using TrackIt.Core.Services.Account;
 
 namespace TrackIt.Core.Infrastructure
@@ -43,6 +44,17 @@ namespace TrackIt.Core.Infrastructure
                 .WithOne()
                 .HasForeignKey(r => r.RoleId)
                 .IsRequired()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ApplicationUser>()
+                .HasMany(u => u.Shipments)
+                .WithOne(s => s.ApplicationUser)
+                .HasForeignKey(s => s.ApplicationUserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<Shipment>()
+                .HasMany(s => s.StatusUpdates)
+                .WithOne(su => su.Shipment)
+                .HasForeignKey(su => su.ShipmentId)
                 .OnDelete(DeleteBehavior.Cascade);
         }
 

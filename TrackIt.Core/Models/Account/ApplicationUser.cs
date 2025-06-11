@@ -5,6 +5,7 @@
 // ---------------------------------------
 
 using Microsoft.AspNetCore.Identity;
+using TrackIt.Core.Models.TrackIt;
 
 namespace TrackIt.Core.Models.Account
 {
@@ -29,10 +30,13 @@ namespace TrackIt.Core.Models.Account
         public bool IsEnabled { get; set; }
         public bool IsLockedOut => LockoutEnabled && LockoutEnd >= DateTimeOffset.UtcNow;
 
+        // From IAuditableEntity
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
+
+        public ICollection<Shipment> Shipments { get; set; }
 
         /// <summary>
         /// Navigation property for the roles this user belongs to.
