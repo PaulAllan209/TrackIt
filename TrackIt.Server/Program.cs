@@ -13,7 +13,6 @@ using TrackIt.Core.Models.Account;
 using TrackIt.Core.Services;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.Authorization;
-using TrackIt.Server.Authorization.Requirements;
 using TrackIt.Server.Configuration;
 using TrackIt.Server.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -194,12 +193,6 @@ builder.Services.AddScoped<IUserRoleService, UserRoleService>();
 
 // Other Services
 builder.Services.AddScoped<IUserIdAccessor, UserIdAccessor>();
-
-// Auth Handlers
-builder.Services.AddSingleton<IAuthorizationHandler, ViewUserAuthorizationHandler>();
-builder.Services.AddSingleton<IAuthorizationHandler, ManageUserAuthorizationHandler>();
-builder.Services.AddSingleton<IAuthorizationHandler, ViewRoleAuthorizationHandler>();
-builder.Services.AddSingleton<IAuthorizationHandler, AssignRolesAuthorizationHandler>();
 
 // DB Creation and Seeding
 builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();

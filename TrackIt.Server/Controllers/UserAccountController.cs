@@ -20,16 +20,15 @@ namespace TrackIt.Server.Controllers
     public class UserAccountController : BaseApiController
     {
         private readonly IUserAccountService _userAccountService;
-        private readonly IAuthorizationService _authorizationService;
 
         public UserAccountController(ILogger<UserAccountController> logger, IMapper mapper,
             IUserAccountService userAccountService, IAuthorizationService authorizationService) : base(logger, mapper)
         {
             _userAccountService = userAccountService;
-            _authorizationService = authorizationService;
         }
 
         [HttpGet("users/me")]
+        [Authorize(AuthPolicies.ViewAllUsersPolicy)]
         [ProducesResponseType(200, Type = typeof(UserVM))]
         public async Task<IActionResult> GetCurrentUser()
         {
@@ -37,15 +36,12 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("users/{id}", Name = nameof(GetUserById))]
+        [Authorize(AuthPolicies.ViewAllUsersPolicy)]
         [ProducesResponseType(200, Type = typeof(UserVM))]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetUserById(string id)
         {
-            if (!(await _authorizationService.AuthorizeAsync(User, id,
-                UserAccountManagementOperations.ReadOperationRequirement)).Succeeded)
-                return new ChallengeResult();
-
             var userVM = await GetUserViewModelHelper(id);
 
             if (userVM != null)
@@ -61,10 +57,6 @@ namespace TrackIt.Server.Controllers
         public async Task<IActionResult> GetUserByUserName(string userName)
         {
             var appUser = await _userAccountService.GetUserByUserNameAsync(userName);
-
-            if (!(await _authorizationService.AuthorizeAsync(User, appUser?.Id ?? string.Empty,
-                UserAccountManagementOperations.ReadOperationRequirement)).Succeeded)
-                return new ChallengeResult();
 
             var userVM = appUser != null ? await GetUserViewModelHelper(appUser.Id) : null;
 
@@ -122,14 +114,6 @@ namespace TrackIt.Server.Controllers
             var appUser = await _userAccountService.GetUserByIdAsync(id);
             var currentRoles = appUser != null
                 ? (await _userAccountService.GetUserRolesAsync(appUser)).ToArray() : null;
-
-            var manageUsersPolicy = _authorizationService.AuthorizeAsync(User, id,
-                UserAccountManagementOperations.UpdateOperationRequirement);
-            var assignRolePolicy = _authorizationService.AuthorizeAsync(User, (user.Roles, currentRoles),
-                AuthPolicies.AssignAllowedRolesPolicy);
-
-            if ((await Task.WhenAll(manageUsersPolicy, assignRolePolicy)).Any(r => !r.Succeeded))
-                return new ChallengeResult();
 
             if (appUser == null)
                 return NotFound(id);
@@ -199,10 +183,6 @@ namespace TrackIt.Server.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateUser(string id, [FromBody] JsonPatchDocument<UserPatchVM> patch)
         {
-            if (!(await _authorizationService.AuthorizeAsync(User, id,
-                UserAccountManagementOperations.UpdateOperationRequirement)).Succeeded)
-                return new ChallengeResult();
-
             var appUser = await _userAccountService.GetUserByIdAsync(id);
             if (appUser == null)
                 return NotFound(id);
@@ -232,10 +212,6 @@ namespace TrackIt.Server.Controllers
         [ProducesResponseType(403)]
         public async Task<IActionResult> Register([FromBody] UserEditVM user)
         {
-            if (!(await _authorizationService.AuthorizeAsync(User, (user.Roles, Array.Empty<string>()),
-                AuthPolicies.AssignAllowedRolesPolicy)).Succeeded)
-                return new ChallengeResult();
-
             if (string.IsNullOrWhiteSpace(user.NewPassword))
                 AddModelError($"{nameof(user.NewPassword)} is required when registering a new user.",
                     nameof(user.NewPassword));
@@ -267,10 +243,6 @@ namespace TrackIt.Server.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            if (!(await _authorizationService.AuthorizeAsync(User, id,
-                UserAccountManagementOperations.DeleteOperationRequirement)).Succeeded)
-                return new ChallengeResult();
-
             var appUser = await _userAccountService.GetUserByIdAsync(id);
 
             if (appUser == null)
