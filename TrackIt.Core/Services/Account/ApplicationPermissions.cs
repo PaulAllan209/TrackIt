@@ -49,6 +49,9 @@ namespace TrackIt.Core.Services.Account
             RolesPermissionGroupName,
             "Permission to assign roles to users");
 
+        /************* SHIPMENT PERMISSIONS *************/
+        //publ
+
         /************* ALL PERMISSIONS *************/
 
         public static readonly ReadOnlyCollection<ApplicationPermission> AllPermissions =

@@ -51,6 +51,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("users/username/{userName}")]
+        [Authorize(AuthPolicies.ViewAllUsersPolicy)]
         [ProducesResponseType(200, Type = typeof(UserVM))]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
@@ -95,6 +96,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpPut("users/me")]
+        [Authorize(AuthPolicies.ManageAllUsersPolicy)]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
@@ -105,6 +107,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpPut("users/{id}")]
+        [Authorize(AuthPolicies.ManageAllUsersPolicy)]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
@@ -169,6 +172,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpPatch("users/me")]
+        [Authorize(AuthPolicies.ManageAllUsersPolicy)]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         public async Task<IActionResult> UpdateCurrentUser([FromBody] JsonPatchDocument<UserPatchVM> patch)
@@ -177,6 +181,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpPatch("users/{id}")]
+        [Authorize(AuthPolicies.ManageAllUsersPolicy)]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
@@ -237,6 +242,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpDelete("users/{id}")]
+        [Authorize(AuthPolicies.ManageAllUsersPolicy)]
         [ProducesResponseType(200, Type = typeof(UserVM))]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
@@ -297,6 +303,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("users/me/preferences")]
+        [Authorize(AuthPolicies.ViewAllUsersPolicy)]
         [ProducesResponseType(200, Type = typeof(string))]
         public async Task<IActionResult> UserPreferences()
         {
@@ -310,6 +317,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpPut("users/me/preferences")]
+        [Authorize(AuthPolicies.ViewAllUsersPolicy)]
         [ProducesResponseType(204)]
         public async Task<IActionResult> UserPreferences([FromBody] string? data)
         {

@@ -1,9 +1,17 @@
 ﻿using AspNetCoreRateLimit;
+using Serilog;
 
 namespace TrackIt.Server.Extensions
 {
     public static class ServiceExtensions
     {
+        public static void ConfigureSerilog(this IServiceCollection services, IConfiguration configuration)
+        {
+            Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(configuration)
+            .CreateLogger();
+        }
+
         public static void ConfigureRateLimitingOptions(this IServiceCollection services)
         {
             var rateLimitRules = new List<RateLimitRule>
@@ -26,4 +34,6 @@ namespace TrackIt.Server.Extensions
             services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
         }
     }
+
+
 }

@@ -25,9 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
 /************* ADD SERVICES *************/
 
 // Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
+builder.Services.ConfigureSerilog(builder.Configuration);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                 throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
