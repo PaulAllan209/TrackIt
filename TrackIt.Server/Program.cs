@@ -19,6 +19,7 @@ using TrackIt.Server.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using TrackIt.Server.Extensions;
 using AspNetCoreRateLimit;
+using TrackIt.Core.Infrastructure.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -146,11 +147,11 @@ builder.Services.AddAuthorizationBuilder()
     .AddPolicy(AuthPolicies.ViewAllRolesPolicy,
         policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ViewRoles))
     .AddPolicy(AuthPolicies.ViewRoleByRoleNamePolicy,
-        policy => policy.Requirements.Add(new ViewRoleAuthorizationRequirement()))
+        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles))
     .AddPolicy(AuthPolicies.ManageAllRolesPolicy,
         policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles))
     .AddPolicy(AuthPolicies.AssignAllowedRolesPolicy,
-        policy => policy.Requirements.Add(new AssignRolesAuthorizationRequirement()));
+        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles));
 
 // Add cors
 builder.Services.AddCors();
