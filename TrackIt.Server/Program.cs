@@ -1,16 +1,10 @@
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Logging;
 using Serilog;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
-using Quartz;
 using TrackIt.Core.Infrastructure;
 using TrackIt.Core.Models.Account;
-using TrackIt.Core.Services;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.Authorization;
 using TrackIt.Server.Configuration;
@@ -27,18 +21,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure Serilog
 builder.Services.ConfigureSerilog(builder.Configuration);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(connectionString, b => b.MigrationsAssembly(migrationsAssembly));
-
-    // Register the entity sets needed by OpenIddict.
-    options.UseOpenIddict();
-});
+// Configure sql server connection
+builder.Services.ConfigureSqlContext(builder.Configuration);
 
 // For Rate Limiting
 builder.Services.AddMemoryCache();
@@ -51,42 +35,11 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddDefaultTokenProviders();
 
 // Configure Identity options and password complexity here
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    // User settings
-    options.User.RequireUniqueEmail = true;
-    options.Password.RequireDigit = true;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = false;
-
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-    options.Lockout.MaxFailedAccessAttempts = 10;
-
-    // Password settings
-    /*
-    options.Password.RequiredLength = 8;
-
-    // Lockout settings
-    */
-
-    // Configure Identity to use the same JWT claims as OpenIddict
-    options.ClaimsIdentity.UserNameClaimType = Claims.Name;
-    options.ClaimsIdentity.UserIdClaimType = Claims.Subject;
-    options.ClaimsIdentity.RoleClaimType = Claims.Role;
-    options.ClaimsIdentity.EmailClaimType = Claims.Email;
-});
+builder.Services.ConfigureIdentityOptions();
 
 // OpenIddict offers native integration with Quartz.NET to perform scheduled tasks
 // Configure OpenIddict periodic pruning of orphaned authorizations/tokens from the database
-builder.Services.AddQuartz(options =>
-{
-    options.UseSimpleTypeLoader();
-    options.UseInMemoryStore();
-});
-
-// Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
-builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+builder.Services.ConfigureQuartz();
 
 builder.Services.AddOpenIddict()
     .AddCore(options =>
@@ -197,8 +150,6 @@ builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 
 //File Logger
 builder.Host.UseSerilog();
-//builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
-
 
 var app = builder.Build();
 
