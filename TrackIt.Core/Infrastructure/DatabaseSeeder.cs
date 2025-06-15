@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using TrackIt.Core.Infrastructure.Interfaces;
+using TrackIt.Core.Interfaces;
 using TrackIt.Core.Models;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Services.Account;

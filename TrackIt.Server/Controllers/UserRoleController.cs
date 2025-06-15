@@ -17,7 +17,7 @@ namespace TrackIt.Server.Controllers
 {
     [Route("api/account")]
     [Authorize]
-    public class UserRoleController : BaseApiController
+    public class UserRoleController : BaseApiController<UserRoleController>
     {
         private readonly IUserRoleService _userRoleService;
         private readonly IAuthorizationService _authorizationService;

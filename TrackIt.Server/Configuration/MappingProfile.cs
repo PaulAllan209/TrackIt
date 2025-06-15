@@ -7,8 +7,11 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using TrackIt.Core.Models.Account;
+using TrackIt.Core.Models.TrackIt;
+using TrackIt.Core.Models.TrackIt.Enums;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.Dto.Account;
+using TrackIt.Server.Dto.TrackIt;
 
 namespace TrackIt.Server.Configuration
 {
@@ -48,6 +51,27 @@ namespace TrackIt.Server.Configuration
 
             CreateMap<IdentityRoleClaim<string>, PermissionDto>()
                 .ConvertUsing(s => ((PermissionDto)ApplicationPermissions.GetPermissionByValue(s.ClaimValue))!);
+
+            CreateMap<ShipmentDto, Shipment>().ReverseMap();
+
+            CreateMap<ShipmentForCreationDto, Shipment>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => Guid.NewGuid()))
+                .ForMember(dest => dest.CurrentStatus, opt => opt.MapFrom(src => ShipmentStatus.ToShip))
+                .ForMember(dest => dest.RecipientAddress, opt => opt.MapFrom(src => src.RecipientAddress))
+
+                // Set timestamps
+                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.UtcNow))
+                .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.UtcNow))
+
+                // Ignore navigation properties (handled by EF)
+                .ForMember(dest => dest.Supplier, opt => opt.Ignore())
+                .ForMember(dest => dest.Recipient, opt => opt.Ignore())
+                .ForMember(dest => dest.StatusUpdates, opt => opt.Ignore())
+
+                // Ignore optional fields that aren't in the DTO
+                .ForMember(dest => dest.DeliveredAt, opt => opt.Ignore())
+                .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
+                .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore());
         }
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
-using TrackIt.Core.Infrastructure.Interfaces;
+using TrackIt.Core.Interfaces.Repositories;
 
 namespace TrackIt.Core.Infrastructure.Repositories
 {
@@ -46,6 +46,11 @@ namespace TrackIt.Core.Infrastructure.Repositories
         public void Update(T entity)
         {
             _appDbContext.Set<T>().Update(entity);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _appDbContext.SaveChangesAsync();
         }
     }
 }

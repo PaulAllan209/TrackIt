@@ -6,6 +6,10 @@ using Quartz;
 using Serilog;
 using System.Reflection;
 using TrackIt.Core.Infrastructure;
+using TrackIt.Core.Infrastructure.Repositories;
+using TrackIt.Core.Interfaces.Repository;
+using TrackIt.Core.Interfaces.Services;
+using TrackIt.Core.Services;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.Authorization;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -172,10 +176,17 @@ namespace TrackIt.Server.Extensions
                     policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles));
         }
 
+        public static void ConfigureRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IShipmentRepository, ShipmentRepository>();
+        }
+
         public static void ConfigureBusinessServices(this IServiceCollection services)
         {
             services.AddScoped<IUserAccountService, UserAccountService>();
             services.AddScoped<IUserRoleService, UserRoleService>();
+
+            services.AddScoped<IShipmentService, ShipmentService>();
         }
     }
 }

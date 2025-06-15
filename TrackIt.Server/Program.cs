@@ -12,7 +12,7 @@ using TrackIt.Server.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 using TrackIt.Server.Extensions;
 using AspNetCoreRateLimit;
-using TrackIt.Core.Infrastructure.Interfaces;
+using TrackIt.Core.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -79,6 +79,9 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Configurations
+
+// Repositories
+builder.Services.ConfigureRepositories();
 
 // Business Services
 builder.Services.ConfigureBusinessServices(); // In service extensions

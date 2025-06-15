@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TrackIt.Core.Infrastructure.Interfaces
+namespace TrackIt.Core.Interfaces.Repositories
 {
     public interface IRepositoryBase<T>
     {

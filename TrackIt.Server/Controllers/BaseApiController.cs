@@ -9,12 +9,12 @@ namespace TrackIt.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [SanitizeModel]
-    public class BaseApiController : ControllerBase
+    public class BaseApiController<T> : ControllerBase
     {
         protected readonly IMapper _mapper;
-        protected readonly ILogger<BaseApiController> _logger;
+        protected readonly ILogger<T> _logger;
 
-        public BaseApiController(ILogger<BaseApiController> logger, IMapper mapper)
+        public BaseApiController(ILogger<T> logger, IMapper mapper)
         {
             _logger = logger;
             _mapper = mapper;
