@@ -1,10 +1,4 @@
-﻿// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
-namespace TrackIt.Server.Authorization
+﻿namespace TrackIt.Server.Authorization
 {
     public static class AuthPolicies
     {
@@ -25,5 +19,21 @@ namespace TrackIt.Server.Authorization
 
         /// <summary>Policy to allow assigning roles the user has access to (Requires new and current roles as parameter).</summary>
         public const string AssignAllowedRolesPolicy = "Assign Allowed Roles";
+
+        // Shipment policies
+        public const string CreateShipmentPolicy = "Create Shipment";
+        public const string ViewShipmentPolicy = "View Shipment";
+        public const string UpdateShipmentPolicy = "Update Shipment";
+        public const string DeleteShipmentPolicy = "Delete Shipment";
+
+        // Status update policies
+        public const string UpdateStatusPolicy = "UpdateStatus";
+        public const string ViewStatusHistoryPolicy = "View Status History";
+
+        // Role-specific policies
+        public const string SupplierOperationsPolicy = "Supplier Operations";
+        public const string FacilityOperationsPolicy = "Facility Operations";
+        public const string DeliveryOperationsPolicy = "Delivery Operations";
+        public const string CustomerOperationsPolicy = "Customer Operations";
     }
 }
