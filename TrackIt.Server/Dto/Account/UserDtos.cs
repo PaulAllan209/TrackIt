@@ -8,9 +8,9 @@ using System.ComponentModel.DataAnnotations;
 using TrackIt.Core.Extensions;
 using TrackIt.Server.Attributes;
 
-namespace TrackIt.Server.ViewModels.Account
+namespace TrackIt.Server.Dto.Account
 {
-    public class UserVM : UserBaseVM
+    public class UserDto : UserBaseDto
     {
         public bool IsLockedOut { get; set; }
 
@@ -18,7 +18,7 @@ namespace TrackIt.Server.ViewModels.Account
         public string[]? Roles { get; set; }
     }
 
-    public class UserEditVM : UserBaseVM
+    public class UserEditDto : UserBaseDto
     {
         public string? CurrentPassword { get; set; }
 
@@ -29,7 +29,7 @@ namespace TrackIt.Server.ViewModels.Account
         public string[]? Roles { get; set; }
     }
 
-    public class UserPatchVM
+    public class UserPatchDto
     {
         public string? FullName { get; set; }
 
@@ -40,7 +40,7 @@ namespace TrackIt.Server.ViewModels.Account
         public string? Configuration { get; set; }
     }
 
-    public abstract class UserBaseVM : ISanitizeModel
+    public abstract class UserBaseDto : ISanitizeModel
     {
         public virtual void SanitizeModel()
         {

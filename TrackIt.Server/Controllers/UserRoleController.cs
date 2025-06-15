@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.Authorization;
-using TrackIt.Server.ViewModels.Account;
+using TrackIt.Server.Dto.Account;
 
 namespace TrackIt.Server.Controllers
 {
@@ -30,7 +30,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("roles/{id}", Name = nameof(GetRoleById))]
-        [ProducesResponseType(200, Type = typeof(RoleVM))]
+        [ProducesResponseType(200, Type = typeof(RoleDto))]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetRoleById(string id)
@@ -50,7 +50,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("roles/name/{name}")]
-        [ProducesResponseType(200, Type = typeof(RoleVM))]
+        [ProducesResponseType(200, Type = typeof(RoleDto))]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetRoleByName(string name)
@@ -69,7 +69,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpGet("roles")]
         [Authorize(AuthPolicies.ViewAllRolesPolicy)]
-        [ProducesResponseType(200, Type = typeof(List<RoleVM>))]
+        [ProducesResponseType(200, Type = typeof(List<RoleDto>))]
         public async Task<IActionResult> GetRoles()
         {
             return await GetRoles(-1, -1);
@@ -77,11 +77,11 @@ namespace TrackIt.Server.Controllers
 
         [HttpGet("roles/{pageNumber:int}/{pageSize:int}")]
         [Authorize(AuthPolicies.ViewAllRolesPolicy)]
-        [ProducesResponseType(200, Type = typeof(List<RoleVM>))]
+        [ProducesResponseType(200, Type = typeof(List<RoleDto>))]
         public async Task<IActionResult> GetRoles(int pageNumber, int pageSize)
         {
             var roles = await _userRoleService.GetRolesLoadRelatedAsync(pageNumber, pageSize);
-            return Ok(_mapper.Map<List<RoleVM>>(roles));
+            return Ok(_mapper.Map<List<RoleDto>>(roles));
         }
 
         [HttpPut("roles/{id}")]
@@ -89,7 +89,7 @@ namespace TrackIt.Server.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateRole(string id, [FromBody] RoleVM role)
+        public async Task<IActionResult> UpdateRole(string id, [FromBody] RoleDto role)
         {
             if (role == null)
                 return BadRequest($"{nameof(role)} cannot be null");
@@ -117,9 +117,9 @@ namespace TrackIt.Server.Controllers
 
         [HttpPost("roles")]
         [Authorize(AuthPolicies.ManageAllRolesPolicy)]
-        [ProducesResponseType(201, Type = typeof(RoleVM))]
+        [ProducesResponseType(201, Type = typeof(RoleDto))]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> CreateRole([FromBody] RoleVM role)
+        public async Task<IActionResult> CreateRole([FromBody] RoleDto role)
         {
             if (role == null)
                 return BadRequest($"{nameof(role)} cannot be null");
@@ -142,7 +142,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpDelete("roles/{id}")]
         [Authorize(AuthPolicies.ManageAllRolesPolicy)]
-        [ProducesResponseType(200, Type = typeof(RoleVM))]
+        [ProducesResponseType(200, Type = typeof(RoleDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteRole(string id)
@@ -179,19 +179,19 @@ namespace TrackIt.Server.Controllers
 
         [HttpGet("permissions")]
         [Authorize(AuthPolicies.ViewAllRolesPolicy)]
-        [ProducesResponseType(200, Type = typeof(List<PermissionVM>))]
+        [ProducesResponseType(200, Type = typeof(List<PermissionDto>))]
         public IActionResult GetAllPermissions()
         {
-            return Ok(_mapper.Map<List<PermissionVM>>(ApplicationPermissions.AllPermissions));
+            return Ok(_mapper.Map<List<PermissionDto>>(ApplicationPermissions.AllPermissions));
         }
 
-        private async Task<RoleVM?> GetRoleViewModelHelper(string roleName, bool loadRelatedEntities = true)
+        private async Task<RoleDto?> GetRoleViewModelHelper(string roleName, bool loadRelatedEntities = true)
         {
             var role = loadRelatedEntities ? await _userRoleService.GetRoleLoadRelatedAsync(roleName)
                 : await _userRoleService.GetRoleByNameAsync(roleName);
 
             if (role != null)
-                return _mapper.Map<RoleVM>(role);
+                return _mapper.Map<RoleDto>(role);
 
             return null;
         }
