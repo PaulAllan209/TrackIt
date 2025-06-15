@@ -16,6 +16,9 @@ namespace TrackIt.Core.Infrastructure
     public class ApplicationDbContext(DbContextOptions options, IUserIdAccessor userIdAccessor) :
         IdentityDbContext<ApplicationUser, ApplicationRole, string>(options)
     {
+        public DbSet<Shipment> Shipments { get; set; }
+        public DbSet<StatusUpdate> StatusUpdates { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -63,6 +66,10 @@ namespace TrackIt.Core.Infrastructure
                 .WithOne(su => su.Shipment)
                 .HasForeignKey(su => su.ShipmentId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Shipment>()
+                .Property(s => s.CurrentStatus)
+                .HasConversion<string>();
         }
 
         public override int SaveChanges()

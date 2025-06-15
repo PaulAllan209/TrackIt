@@ -14,7 +14,7 @@ namespace TrackIt.Server.Dto.TrackIt
         public string RecipientAddress { get; set; }
         public string RecipientId { get; set; }
 
-        public ShipmentStatus CurrentStatus { get; set; }
+        public string CurrentStatus { get; set; }
         public DateTime? DeliveredAt { get; set; }
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
