@@ -19,14 +19,14 @@ var builder = WebApplication.CreateBuilder(args);
 /************* ADD SERVICES *************/
 
 // Configure Serilog
-builder.Services.ConfigureSerilog(builder.Configuration);
+builder.Services.ConfigureSerilog(builder.Configuration); // In service extensions
 
 // Configure sql server connection
-builder.Services.ConfigureSqlContext(builder.Configuration);
+builder.Services.ConfigureSqlContext(builder.Configuration); // In service extensions
 
 // For Rate Limiting
 builder.Services.AddMemoryCache();
-builder.Services.ConfigureRateLimitingOptions();
+builder.Services.ConfigureRateLimitingOptions(); // In service extensions
 builder.Services.AddHttpContextAccessor();
 
 // Register the Identity services.
@@ -35,73 +35,15 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddDefaultTokenProviders();
 
 // Configure Identity options and password complexity here
-builder.Services.ConfigureIdentityOptions();
+builder.Services.ConfigureIdentityOptions(); // In service extensions
 
 // OpenIddict offers native integration with Quartz.NET to perform scheduled tasks
 // Configure OpenIddict periodic pruning of orphaned authorizations/tokens from the database
-builder.Services.ConfigureQuartz();
+builder.Services.ConfigureQuartz(); // In service extensions
 
-builder.Services.AddOpenIddict()
-    .AddCore(options =>
-    {
-        options.UseEntityFrameworkCore()
-               .UseDbContext<ApplicationDbContext>();
+builder.Services.ConfigureOpenIddict(); // In service extensions
 
-        options.UseQuartz();
-    })
-    .AddServer(options =>
-    {
-        // Enable the token endpoint
-        options.SetTokenEndpointUris("connect/token");
-
-        options.AllowPasswordFlow()
-               .AllowRefreshTokenFlow();
-
-        options.RegisterScopes(
-            Scopes.Profile,
-            Scopes.Email,
-            Scopes.Address,
-            Scopes.Phone,
-            Scopes.Roles);
-
-        // Register the signing and encryption credentials.
-        options.AddDevelopmentEncryptionCertificate()
-                .AddDevelopmentSigningCertificate();
-        
-        // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
-        options.UseAspNetCore()
-               .EnableTokenEndpointPassthrough();
-    })
-    // Register the OpenIddict validation components.
-    .AddValidation(options =>
-    {
-        // Import the configuration from the local OpenIddict server instance.
-        options.UseLocalServer();
-
-        // Register the ASP.NET Core host.
-        options.UseAspNetCore();
-    });
-
-builder.Services.AddAuthentication(o =>
-{
-    o.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-    o.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-    o.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-});
-
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(AuthPolicies.ViewAllUsersPolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ViewUsers))
-    .AddPolicy(AuthPolicies.ManageAllUsersPolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageUsers))
-    .AddPolicy(AuthPolicies.ViewAllRolesPolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ViewRoles))
-    .AddPolicy(AuthPolicies.ViewRoleByRoleNamePolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles))
-    .AddPolicy(AuthPolicies.ManageAllRolesPolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles))
-    .AddPolicy(AuthPolicies.AssignAllowedRolesPolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles));
+builder.Services.ConfigureAuthInfrastructure(); // In service extensions
 
 // Add cors
 builder.Services.AddCors();
@@ -139,8 +81,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 // Configurations
 
 // Business Services
-builder.Services.AddScoped<IUserAccountService, UserAccountService>();
-builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+builder.Services.ConfigureBusinessServices(); // In service extensions
 
 // Other Services
 builder.Services.AddScoped<IUserIdAccessor, UserIdAccessor>();
