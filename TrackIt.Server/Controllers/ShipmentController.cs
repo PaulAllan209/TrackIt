@@ -54,7 +54,9 @@ namespace TrackIt.Server.Controllers
 
             var shipmentDtoToReturn = _mapper.Map<ShipmentDto>(shipmentEntityReturned);
 
-            return Ok(shipmentDtoToReturn);
+            return CreatedAtAction(nameof(GetShipmentById),
+                new { id = shipmentDtoToReturn.Id },
+                shipmentDtoToReturn);
         }
 
         [HttpGet("{role}")]
@@ -78,6 +80,13 @@ namespace TrackIt.Server.Controllers
             var shipmentDtos = _mapper.Map<IEnumerable<ShipmentDto>>(shipmentEntities);
 
             return Ok(shipmentDtos);
+        }
+
+        [HttpGet("{id}", Name = nameof(GetShipmentById))]
+        [Authorize]
+        public async Task<IActionResult> GetShipmentById(string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
