@@ -27,7 +27,8 @@
         public const string DeleteShipmentPolicy = "Delete Shipment";
 
         // Status update policies
-        public const string UpdateStatusPolicy = "UpdateStatus";
+        public const string CreateStatusPolicy = "Create Status";
+        public const string UpdateStatusPolicy = "Update Status";
         public const string ViewStatusHistoryPolicy = "View Status History";
 
         // Role-specific policies

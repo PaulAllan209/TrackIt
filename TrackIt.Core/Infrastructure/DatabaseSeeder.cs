@@ -36,13 +36,37 @@ namespace TrackIt.Core.Infrastructure
 
                 await EnsureRoleAsync(userRoleName, "Default user", []);
 
-                await EnsureRoleAsync(supplierRoleName, "The supplier role", []);
+                await EnsureRoleAsync(supplierRoleName, "The supplier role", 
+                [
+                    ApplicationPermissions.CreateShipment,
+                    ApplicationPermissions.ViewShipment,
+                    ApplicationPermissions.UpdateShipment,
+                    ApplicationPermissions.DeleteShipment,
+                    ApplicationPermissions.ViewStatusHistory,
+                    ApplicationPermissions.CreateStatus,
+                    ApplicationPermissions.UpdateStatus
+                ]);
 
-                await EnsureRoleAsync(facilityRoleName, "The facility role", []);
+                await EnsureRoleAsync(facilityRoleName, "The facility role", 
+                [
+                    ApplicationPermissions.ViewShipment,
+                    ApplicationPermissions.UpdateStatus,
+                    ApplicationPermissions.ViewStatusHistory
+                ]);
 
-                await EnsureRoleAsync(deliveryRoleName, "The delivery role", []);
+                await EnsureRoleAsync(deliveryRoleName, "The delivery role", 
+                [
+                    ApplicationPermissions.ViewShipment,
+                    ApplicationPermissions.UpdateStatus,
+                    ApplicationPermissions.ViewStatusHistory
+                ]);
 
-                await EnsureRoleAsync(customerRoleName, "The customer role", []);
+                await EnsureRoleAsync(customerRoleName, "The customer role",
+                [
+                    ApplicationPermissions.ViewShipment,
+                    ApplicationPermissions.ViewStatusHistory,
+                    ApplicationPermissions.SetStatusDelivered
+                ]);
 
                 await CreateUserAsync("admin",
                                       "tempP@ss123",
