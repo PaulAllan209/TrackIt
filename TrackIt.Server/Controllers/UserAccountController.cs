@@ -241,6 +241,55 @@ namespace TrackIt.Server.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpPost("users/batch")]
+        [Authorize(AuthPolicies.ManageAllUsersPolicy)]
+        [ProducesResponseType(201, Type = typeof(List<UserDto>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> RegisterBatch([FromBody] List<UserEditDto> users)
+        {
+            var createdUsers = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                if (string.IsNullOrWhiteSpace(user.NewPassword))
+                {
+                    AddModelError($"{nameof(user.NewPassword)} is required when registering a new user.", nameof(user.NewPassword));
+                    continue;
+                }
+
+                if (user.Roles == null)
+                {
+                    AddModelError($"{nameof(user.Roles)} is required when registering a new user.", nameof(user.Roles));
+                    continue;
+                }
+
+                if (!ModelState.IsValid)
+                    continue;
+
+                var appUser = _mapper.Map<ApplicationUser>(user);
+                var result = await _userAccountService.CreateUserAsync(appUser, user.Roles!, user.NewPassword!);
+
+                if (result.Succeeded)
+                {
+                    var userDto = await GetUserViewModelHelper(appUser.Id);
+                    if (userDto != null)
+                        createdUsers.Add(userDto);
+                }
+                else
+                {
+                    AddModelError(result.Errors);
+                }
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return CreatedAtAction(nameof(GetUsers), createdUsers);
+        }
+
+
+
         [HttpDelete("users/{id}")]
         [Authorize(AuthPolicies.ManageAllUsersPolicy)]
         [ProducesResponseType(200, Type = typeof(UserDto))]
