@@ -10,5 +10,6 @@ namespace TrackIt.Core.Interfaces.Services
     public interface IShipmentService
     {
         Task<Shipment> CreateShipmentAsync(Shipment shipment);
+        Task<IEnumerable<Shipment>> GetAllShipmentAsync(string userType, bool trackChanges, string? userId = null);
     }
 }

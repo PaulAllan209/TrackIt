@@ -7,7 +7,9 @@ using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Interfaces.Services;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Models.TrackIt;
+using TrackIt.Core.Models.TrackIt.Enums;
 using TrackIt.Server.Dto.TrackIt;
+using TrackIt.Server.Services;
 
 namespace TrackIt.Server.Controllers
 {
@@ -53,6 +55,29 @@ namespace TrackIt.Server.Controllers
             var shipmentDtoToReturn = _mapper.Map<ShipmentDto>(shipmentEntityReturned);
 
             return Ok(shipmentDtoToReturn);
+        }
+
+        [HttpGet("{role}")]
+        [Authorize]
+        public async Task<IActionResult> GetAllShipments(string role)
+        {
+            if (!UserType.AllRoles.Contains(role, StringComparer.OrdinalIgnoreCase))
+                return BadRequest("Invalid role specified.");
+
+            var userRoles = GetCurrentUserRoles();
+            if (!userRoles.Contains(role, StringComparer.OrdinalIgnoreCase))
+            {
+                return Unauthorized();
+            }
+
+            var userId = GetCurrentUserId();
+
+            // For admin user you may not need userId but the repository expects it, so pass it anyway
+            var shipmentEntities = await _shipmentService.GetAllShipmentAsync(role, trackChanges: false, userId);
+
+            var shipmentDtos = _mapper.Map<IEnumerable<ShipmentDto>>(shipmentEntities);
+
+            return Ok(shipmentDtos);
         }
     }
 }

@@ -27,5 +27,17 @@ namespace TrackIt.Core.Services
 
             return shipment;
         }
+
+        public async Task<IEnumerable<Shipment>> GetAllShipmentAsync(string userType, bool trackChanges, string? userId = null)
+        {
+            if(userType == null)
+            {
+                throw new ArgumentNullException(nameof(userType));
+            }
+
+            var shipmentEntities = await _shipmentRepository.GetAllShipmentsAsync(userType, trackChanges, userId);
+
+            return shipmentEntities;
+        }
     }
 }

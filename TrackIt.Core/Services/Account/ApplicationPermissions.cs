@@ -104,7 +104,7 @@ namespace TrackIt.Core.Services.Account
                 ViewUsers, ManageUsers,
                 ViewRoles, ManageRoles, AssignRoles,
                 CreateShipment, ViewShipment, UpdateShipment, DeleteShipment,
-                CreateStatus, UpdateStatus, ViewStatusHistory
+                CreateStatus, UpdateStatus, ViewStatusHistory, SetStatusDelivered
             }.AsReadOnly();
 
         /************* HELPER METHODS *************/

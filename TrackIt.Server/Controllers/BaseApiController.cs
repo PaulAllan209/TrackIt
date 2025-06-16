@@ -25,6 +25,11 @@ namespace TrackIt.Server.Controllers
             return Utilities.GetUserId(User) ?? throw new UserNotFoundException(errorMsg);
         }
 
+        protected string[] GetCurrentUserRoles(string errorMsg = "Error retrieving the roles for the current user.")
+        {
+            return Utilities.GetRoles(User) ?? throw new UserRoleException(errorMsg); 
+        }
+
         protected void AddModelError(IEnumerable<string> errors, string key = "")
         {
             foreach (var error in errors)
