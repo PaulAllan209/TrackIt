@@ -8,9 +8,9 @@ using System.Reflection;
 using TrackIt.Core.Infrastructure;
 using TrackIt.Core.Infrastructure.Repositories;
 using TrackIt.Core.Interfaces.Repository;
-using TrackIt.Core.Interfaces.Services;
-using TrackIt.Core.Services;
 using TrackIt.Core.Services.Account;
+using TrackIt.Core.Services.Shipping;
+using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Authorization;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 

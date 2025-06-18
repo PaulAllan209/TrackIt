@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrackIt.Core.Interfaces.Repository;
-using TrackIt.Core.Models.TrackIt;
-using TrackIt.Core.Models.TrackIt.Enums;
+using TrackIt.Core.Models.Shipping;
+using TrackIt.Core.Models.Shipping.Enums;
 
 namespace TrackIt.Core.Infrastructure.Repositories
 {
@@ -46,6 +46,32 @@ namespace TrackIt.Core.Infrastructure.Repositories
             }
 
             return new List<Shipment>();
+        }
+
+        public async Task<Shipment?> GetShipmentByIdAsync(string userType, string shipmentId, bool trackChanges, string? userId = null)
+        {
+            if (userType == UserType.Admin && !string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(shipmentId))
+            {
+                return await FindByCondition(s => s.Id.ToString() == shipmentId, trackChanges).FirstOrDefaultAsync();
+            }
+            else if (userType == UserType.Supplier && !string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(shipmentId))
+            {
+                return await FindByCondition(s => ((s.SupplierId == userId) && (s.Id.ToString() == shipmentId)), trackChanges).FirstOrDefaultAsync();
+            }
+            else if (userType == UserType.Facility && !string.IsNullOrEmpty(userId))
+            {
+                return await FindByCondition(s => s.StatusUpdates.Any(su => ((su.UpdatedBy == userId) && (su.ShipmentId.ToString() == shipmentId))), trackChanges).FirstOrDefaultAsync();
+            }
+            else if (userType == UserType.Delivery && !string.IsNullOrEmpty(userId))
+            {
+                return await FindByCondition(s => s.StatusUpdates.Any(su => ((su.UpdatedBy == userId) && (su.ShipmentId.ToString() == shipmentId))), trackChanges).FirstOrDefaultAsync();
+            }
+            else if (userType == UserType.Customer && !string.IsNullOrEmpty(userId))
+            {
+                return await FindByCondition(s => ((s.RecipientId == userId) && (s.Id.ToString() == shipmentId)), trackChanges).FirstOrDefaultAsync();
+            }
+
+            return null;
         }
 
         public async Task SaveChanges()

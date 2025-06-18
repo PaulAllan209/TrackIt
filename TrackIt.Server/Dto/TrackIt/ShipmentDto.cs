@@ -1,6 +1,6 @@
 ﻿using TrackIt.Core.Models.Account;
-using TrackIt.Core.Models.TrackIt;
-using TrackIt.Core.Models.TrackIt.Enums;
+using TrackIt.Core.Models.Shipping;
+using TrackIt.Core.Models.Shipping.Enums;
 
 namespace TrackIt.Server.Dto.TrackIt
 {

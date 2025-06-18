@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TrackIt.Core.Models.TrackIt.Enums;
+using TrackIt.Core.Models.Shipping.Enums;
 
-namespace TrackIt.Core.Models.TrackIt
+namespace TrackIt.Core.Models.Shipping
 {
     public class StatusUpdate : IAuditableEntity
     {

@@ -1,14 +1,8 @@
-﻿// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TrackIt.Core.Models;
 using TrackIt.Core.Models.Account;
-using TrackIt.Core.Models.TrackIt;
+using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Services.Account;
 
 namespace TrackIt.Core.Infrastructure

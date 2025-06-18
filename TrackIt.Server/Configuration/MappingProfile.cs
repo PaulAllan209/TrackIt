@@ -7,8 +7,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using TrackIt.Core.Models.Account;
-using TrackIt.Core.Models.TrackIt;
-using TrackIt.Core.Models.TrackIt.Enums;
+using TrackIt.Core.Models.Shipping;
+using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.Dto.Account;
 using TrackIt.Server.Dto.TrackIt;
@@ -30,6 +30,13 @@ namespace TrackIt.Server.Configuration
             CreateMap<UserEditDto, ApplicationUser>()
                 .ForMember(d => d.Roles, map => map.Ignore())
                 .ForMember(d => d.Id, map => map.Condition(src => src.Id != null));
+
+            CreateMap<ApplicationUser, UserRegisterDto>()
+                .ForMember(d => d.Roles, map => map.Ignore());
+            CreateMap<UserRegisterDto, ApplicationUser>()
+                .ForMember(d => d.Roles, map => map.Ignore()) // Roles are passed by parameters in the service layer
+                .ForMember(d => d.Id, map => map.Ignore()); // Just let IdentityUser from aspnetcore library handle Id generation
+
 
             CreateMap<ApplicationUser, UserPatchDto>()
                 .ReverseMap();

@@ -215,11 +215,11 @@ namespace TrackIt.Server.Controllers
         [ProducesResponseType(201, Type = typeof(UserDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> Register([FromBody] UserEditDto user)
+        public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
         {
-            if (string.IsNullOrWhiteSpace(user.NewPassword))
-                AddModelError($"{nameof(user.NewPassword)} is required when registering a new user.",
-                    nameof(user.NewPassword));
+            if (string.IsNullOrWhiteSpace(user.Password))
+                AddModelError($"{nameof(user.Password)} is required when registering a new user.",
+                    nameof(user.Password));
 
             if (user.Roles == null)
                 AddModelError($"{nameof(user.Roles)} is required when registering a new user.", nameof(user.Roles));
@@ -227,7 +227,7 @@ namespace TrackIt.Server.Controllers
             if (ModelState.IsValid)
             {
                 var appUser = _mapper.Map<ApplicationUser>(user);
-                var result = await _userAccountService.CreateUserAsync(appUser, user.Roles!, user.NewPassword!);
+                var result = await _userAccountService.CreateUserAsync(appUser, user.Roles!, user.Password!);
 
                 if (result.Succeeded)
                 {
@@ -246,15 +246,15 @@ namespace TrackIt.Server.Controllers
         [ProducesResponseType(201, Type = typeof(List<UserDto>))]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> RegisterBatch([FromBody] List<UserEditDto> users)
+        public async Task<IActionResult> RegisterBatch([FromBody] List<UserRegisterDto> users)
         {
             var createdUsers = new List<UserDto>();
 
             foreach (var user in users)
             {
-                if (string.IsNullOrWhiteSpace(user.NewPassword))
+                if (string.IsNullOrWhiteSpace(user.Password))
                 {
-                    AddModelError($"{nameof(user.NewPassword)} is required when registering a new user.", nameof(user.NewPassword));
+                    AddModelError($"{nameof(user.Password)} is required when registering a new user.", nameof(user.Password));
                     continue;
                 }
 
@@ -268,7 +268,7 @@ namespace TrackIt.Server.Controllers
                     continue;
 
                 var appUser = _mapper.Map<ApplicationUser>(user);
-                var result = await _userAccountService.CreateUserAsync(appUser, user.Roles!, user.NewPassword!);
+                var result = await _userAccountService.CreateUserAsync(appUser, user.Roles!, user.Password!);
 
                 if (result.Succeeded)
                 {

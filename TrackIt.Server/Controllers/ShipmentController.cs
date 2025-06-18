@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TrackIt.Core.Interfaces.Repository;
-using TrackIt.Core.Interfaces.Services;
 using TrackIt.Core.Models.Account;
-using TrackIt.Core.Models.TrackIt;
-using TrackIt.Core.Models.TrackIt.Enums;
+using TrackIt.Core.Models.Shipping;
+using TrackIt.Core.Models.Shipping.Enums;
+using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Dto.TrackIt;
 using TrackIt.Server.Services;
 
@@ -59,24 +59,21 @@ namespace TrackIt.Server.Controllers
                 shipmentDtoToReturn);
         }
 
-        [HttpGet("{role}")]
+        [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllShipments(string role)
+        public async Task<IActionResult> GetAllShipments([FromQuery] string? role = null)
         {
-            if (!UserType.AllRoles.Contains(role, StringComparer.OrdinalIgnoreCase))
-                return BadRequest("Invalid role specified.");
-
-            var userRoles = GetCurrentUserRoles();
-            if (!userRoles.Contains(role, StringComparer.OrdinalIgnoreCase))
-            {
-                return Unauthorized();
-            }
-
             var userId = GetCurrentUserId();
+            var userRoles = GetCurrentUserRoles();
+
+            // If role specified, verify user has that role
+            if (!string.IsNullOrEmpty(role) && !userRoles.Contains(role))
+                return Unauthorized();
+
+            string roleToUse = !string.IsNullOrEmpty(role) ? role : GetHighestPrivilegeRole(userRoles);
 
             // For admin user you may not need userId but the repository expects it, so pass it anyway
-            var shipmentEntities = await _shipmentService.GetAllShipmentAsync(role, trackChanges: false, userId);
-
+            var shipmentEntities = await _shipmentService.GetAllShipmentAsync(roleToUse, trackChanges: false, userId);
             var shipmentDtos = _mapper.Map<IEnumerable<ShipmentDto>>(shipmentEntities);
 
             return Ok(shipmentDtos);
@@ -86,7 +83,35 @@ namespace TrackIt.Server.Controllers
         [Authorize]
         public async Task<IActionResult> GetShipmentById(string id)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(id))
+                return BadRequest("Shipment ID cannot be empty.");
+
+            var userId = GetCurrentUserId();
+            var userRoles = GetCurrentUserRoles();
+
+            // Get the proper role to use for data access - prioritizing higher privilages
+            string roleToUse = GetHighestPrivilegeRole(userRoles);
+
+            var shipment = await _shipmentService.GetShipmentByIdAsync(roleToUse, id, trackChanges: false, userId);
+            var shipmentDto = _mapper.Map<ShipmentDto>(shipment);
+
+            return Ok(shipmentDto);
+        }
+
+        private string GetHighestPrivilegeRole(string[] userRoles)
+        {
+            if (userRoles.Contains(UserType.Admin, StringComparer.OrdinalIgnoreCase))
+                return UserType.Admin;
+            if (userRoles.Contains(UserType.Supplier, StringComparer.OrdinalIgnoreCase))
+                return UserType.Supplier;
+            if (userRoles.Contains(UserType.Facility, StringComparer.OrdinalIgnoreCase))
+                return UserType.Facility;
+            if (userRoles.Contains(UserType.Delivery, StringComparer.OrdinalIgnoreCase))
+                return UserType.Delivery;
+            if (userRoles.Contains(UserType.Customer, StringComparer.OrdinalIgnoreCase))
+                return UserType.Customer;
+
+            return UserType.Customer; // Default to lowest privilege
         }
     }
 }

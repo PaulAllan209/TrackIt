@@ -29,6 +29,16 @@ namespace TrackIt.Server.Dto.Account
         public string[]? Roles { get; set; }
     }
 
+    public class UserRegisterDto : UserBaseDto
+    {
+
+        [MinLength(6, ErrorMessage = "Password must be at least 6 characters")]
+        public string? Password { get; set; }
+
+        [MinimumCount(1, false, ErrorMessage = "Roles cannot be empty")]
+        public string[]? Roles { get; set; }
+    }
+
     public class UserPatchDto
     {
         public string? FullName { get; set; }

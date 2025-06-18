@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TrackIt.Core.Models.TrackIt.Enums
+namespace TrackIt.Core.Models.Shipping.Enums
 {
     public static class UserType
     {
-        public const string Admin = "Admin";
+        public const string Admin = "administrator";
         public const string Supplier = "Supplier";
         public const string Facility = "Facility";
         public const string Delivery = "Delivery";
