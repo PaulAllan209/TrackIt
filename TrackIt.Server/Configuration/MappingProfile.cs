@@ -68,6 +68,8 @@ namespace TrackIt.Server.Configuration
                 .ForMember(dest => dest.CurrentStatus, opt => opt.MapFrom(src => ShipmentStatus.ToShip))
                 .ForMember(dest => dest.RecipientAddress, opt => opt.MapFrom(src => src.RecipientAddress))
 
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
+
                 // Set timestamps
                 .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.UtcNow))
                 .ForMember(dest => dest.UpdatedDate, opt => opt.MapFrom(src => DateTime.UtcNow))

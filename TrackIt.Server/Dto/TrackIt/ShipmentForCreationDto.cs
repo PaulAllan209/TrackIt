@@ -4,6 +4,8 @@ namespace TrackIt.Server.Dto.TrackIt
 {
     public record ShipmentForCreationDto
     {
+        [Required(ErrorMessage = "Title is required")]
+        public string Title { get; init; }
         [Required(ErrorMessage = "RecipientName is required")]
         public string RecipientName { get; init; }
 

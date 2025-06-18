@@ -12,6 +12,8 @@ namespace TrackIt.Core.Models.Shipping
     {
         public Guid Id { get; set; }
 
+        public string Title { get; set; }
+
         public string SupplierId { get; set; }
         public ApplicationUser Supplier { get; set; }
 

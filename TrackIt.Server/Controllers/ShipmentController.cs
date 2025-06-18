@@ -8,6 +8,7 @@ using TrackIt.Core.Models.Account;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.Services.Shipping.Interfaces;
+using TrackIt.Server.ActionFilters;
 using TrackIt.Server.Dto.TrackIt;
 using TrackIt.Server.Services;
 
@@ -36,6 +37,11 @@ namespace TrackIt.Server.Controllers
         [Authorize]
         public async Task<IActionResult> CreateShipment([FromBody] ShipmentForCreationDto shipmentForCreationDto)
         {
+            if (!ModelState.IsValid)
+            {
+                return UnprocessableEntity(ModelState);
+            }
+
             var shipmentEntity = _mapper.Map<Shipment>(shipmentForCreationDto);
 
             // Get supplier id from current logged in context
