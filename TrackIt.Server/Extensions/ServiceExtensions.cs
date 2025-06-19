@@ -7,6 +7,7 @@ using Serilog;
 using System.Reflection;
 using TrackIt.Core.Infrastructure;
 using TrackIt.Core.Infrastructure.Repositories;
+using TrackIt.Core.Interfaces.Repositories;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Services.Account;
 using TrackIt.Core.Services.Shipping;
@@ -235,6 +236,7 @@ namespace TrackIt.Server.Extensions
         public static void ConfigureRepositories(this IServiceCollection services)
         {
             services.AddScoped<IShipmentRepository, ShipmentRepository>();
+            services.AddScoped<IStatusUpdateRepository, StatusUpdateRepository>();
         }
 
         public static void ConfigureBusinessServices(this IServiceCollection services)
@@ -243,6 +245,7 @@ namespace TrackIt.Server.Extensions
             services.AddScoped<IUserRoleService, UserRoleService>();
 
             services.AddScoped<IShipmentService, ShipmentService>();
+            services.AddScoped<IStatusUpdateService, StatusUpdateService>();
         }
     }
 }

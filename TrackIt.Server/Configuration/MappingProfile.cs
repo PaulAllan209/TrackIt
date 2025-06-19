@@ -83,6 +83,11 @@ namespace TrackIt.Server.Configuration
                 .ForMember(dest => dest.DeliveredAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore());
+
+            CreateMap<StatusUpdate, StatusUpdateDto>();
+
+            CreateMap<StatusUpdateForCreationDto, StatusUpdate>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<ShipmentStatus>(src.Status, true)));
         }
     }
 }

@@ -33,9 +33,9 @@ namespace TrackIt.Core.Infrastructure.Repositories
             else
                 return _appDbContext.Set<T>().Where(expression).AsNoTracking();
         }
-        public void Create(T entity)
+        public async Task CreateAsync(T entity)
         {
-            _appDbContext.Set<T>().Add(entity);
+            await _appDbContext.Set<T>().AddAsync(entity);
         }
 
         public void Delete(T entity)

@@ -19,7 +19,7 @@ namespace TrackIt.Core.Infrastructure.Repositories
 
         public async Task CreateShipmentAsync(Shipment shipment)
         {
-            Create(shipment);
+            await CreateAsync(shipment);
         }
 
         public async Task<IEnumerable<Shipment>> GetAllShipmentsAsync(string userType, bool trackChanges, string? userId = null)
