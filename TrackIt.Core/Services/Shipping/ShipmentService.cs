@@ -62,6 +62,12 @@ namespace TrackIt.Core.Services.Shipping
             return shipmentEntity;
         }
 
+        public async Task UpdateShipmentAsync()
+        {
+            // This is just a save changes async call so that after modifying the entity in the controller layer 
+            await _shipmentRepository.SaveAsync();
+        }
+
         public async Task DeleteShipmentAsync(string userType, string shipmentId, bool trackChanges, string? userId = null)
         {
             if (string.IsNullOrWhiteSpace(userType))

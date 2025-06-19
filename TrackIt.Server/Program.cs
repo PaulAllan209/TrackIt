@@ -62,7 +62,8 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 // Uncomment this and delete the options in AddControllers if you want to manually add [ServiceFilter(typeof(ValidationFilterAttribute))] in controllers
 builder.Services.AddScoped<ValidationFilterAttribute>();
 
-builder.Services.AddControllers();
+// Newtonsoft Json is needed for patch requests specifically patch docs
+builder.Services.AddControllers().AddNewtonsoftJson(); 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Account;
@@ -105,6 +107,43 @@ namespace TrackIt.Server.Controllers
             var shipmentDto = _mapper.Map<ShipmentDto>(shipment);
 
             return Ok(shipmentDto);
+        }
+
+        [HttpPatch("{id}")]
+        [Authorize]
+        public async Task<IActionResult> PatchShipment(string id, [FromBody] JsonPatchDocument<ShipmentDto> patchDoc)
+        {
+            if (patchDoc == null)
+                return BadRequest("Patch document cannot be null.");
+
+            var userId = GetCurrentUserId();
+            var userRoles = GetCurrentUserRoles();
+            string roleToUse = GetHighestPrivilegeRole(userRoles);
+
+            var shipmentToUpdateEntity = await _shipmentService.GetShipmentByIdAsync(roleToUse, id, trackChanges: true, userId);
+
+            if (shipmentToUpdateEntity == null)
+                return NotFound();
+
+            // Map entity to DTO
+            var shipmentDto = _mapper.Map<ShipmentDto>(shipmentToUpdateEntity);
+
+            // Apply the patch
+            patchDoc.ApplyTo(shipmentDto, error =>
+            {
+                ModelState.AddModelError(error.AffectedObject?.ToString() ?? "", error.ErrorMessage);
+            });
+
+            if (!ModelState.IsValid)
+                return UnprocessableEntity(ModelState);
+
+            // Map DTO back to entity
+            _mapper.Map(shipmentDto, shipmentToUpdateEntity);
+
+            // This function call just calls save changes in the repository layer
+            await _shipmentService.UpdateShipmentAsync();
+
+            return NoContent();
         }
 
         [HttpDelete("{id}")]

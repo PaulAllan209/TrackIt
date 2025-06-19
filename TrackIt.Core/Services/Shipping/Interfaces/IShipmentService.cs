@@ -12,7 +12,7 @@ namespace TrackIt.Core.Services.Shipping.Interfaces
         Task<Shipment> CreateShipmentAsync(Shipment shipment);
         Task<IEnumerable<Shipment>> GetAllShipmentAsync(string userType, bool trackChanges, string? userId = null);
         Task<Shipment> GetShipmentByIdAsync(string userType, string shipmentId, bool trackChanges, string? userId = null);
+        Task UpdateShipmentAsync();
         Task DeleteShipmentAsync(string userType, string shipmentId, bool trackChanges, string? userId = null);
-
     }
 }
