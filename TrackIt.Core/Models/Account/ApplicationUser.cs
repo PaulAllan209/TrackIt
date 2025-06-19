@@ -5,7 +5,7 @@
 // ---------------------------------------
 
 using Microsoft.AspNetCore.Identity;
-using TrackIt.Core.Models.TrackIt;
+using TrackIt.Core.Models.Shipping;
 
 namespace TrackIt.Core.Models.Account
 {

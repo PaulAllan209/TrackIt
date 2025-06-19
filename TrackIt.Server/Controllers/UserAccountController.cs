@@ -11,13 +11,13 @@ using Microsoft.AspNetCore.Mvc;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.Authorization;
-using TrackIt.Server.ViewModels.Account;
+using TrackIt.Server.Dto.Account;
 
 namespace TrackIt.Server.Controllers
 {
     [Route("api/account")]
     [Authorize]
-    public class UserAccountController : BaseApiController
+    public class UserAccountController : BaseApiController<UserAccountController>
     {
         private readonly IUserAccountService _userAccountService;
 
@@ -29,7 +29,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpGet("users/me")]
         [Authorize(AuthPolicies.ViewAllUsersPolicy)]
-        [ProducesResponseType(200, Type = typeof(UserVM))]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
         public async Task<IActionResult> GetCurrentUser()
         {
             return await GetUserById(GetCurrentUserId());
@@ -37,7 +37,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpGet("users/{id}", Name = nameof(GetUserById))]
         [Authorize(AuthPolicies.ViewAllUsersPolicy)]
-        [ProducesResponseType(200, Type = typeof(UserVM))]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetUserById(string id)
@@ -52,7 +52,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpGet("users/username/{userName}")]
         [Authorize(AuthPolicies.ViewAllUsersPolicy)]
-        [ProducesResponseType(200, Type = typeof(UserVM))]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetUserByUserName(string userName)
@@ -69,7 +69,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpGet("users")]
         [Authorize(AuthPolicies.ViewAllUsersPolicy)]
-        [ProducesResponseType(200, Type = typeof(List<UserVM>))]
+        [ProducesResponseType(200, Type = typeof(List<UserDto>))]
         public async Task<IActionResult> GetUsers()
         {
             return await GetUsers(-1, -1);
@@ -77,16 +77,16 @@ namespace TrackIt.Server.Controllers
 
         [HttpGet("users/{pageNumber:int}/{pageSize:int}")]
         [Authorize(AuthPolicies.ViewAllUsersPolicy)]
-        [ProducesResponseType(200, Type = typeof(List<UserVM>))]
+        [ProducesResponseType(200, Type = typeof(List<UserDto>))]
         public async Task<IActionResult> GetUsers(int pageNumber, int pageSize)
         {
             var usersAndRoles = await _userAccountService.GetUsersAndRolesAsync(pageNumber, pageSize);
 
-            var usersVM = new List<UserVM>();
+            var usersVM = new List<UserDto>();
 
             foreach (var item in usersAndRoles)
             {
-                var userVM = _mapper.Map<UserVM>(item.User);
+                var userVM = _mapper.Map<UserDto>(item.User);
                 userVM.Roles = item.Roles;
 
                 usersVM.Add(userVM);
@@ -100,7 +100,7 @@ namespace TrackIt.Server.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> UpdateCurrentUser([FromBody] UserEditVM user)
+        public async Task<IActionResult> UpdateCurrentUser([FromBody] UserEditDto user)
         {
             var userId = GetCurrentUserId($"Error retrieving the userId for user \"{user.UserName}\".");
             return await UpdateUser(userId, user);
@@ -112,7 +112,7 @@ namespace TrackIt.Server.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserEditVM user)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] UserEditDto user)
         {
             var appUser = await _userAccountService.GetUserByIdAsync(id);
             var currentRoles = appUser != null
@@ -175,7 +175,7 @@ namespace TrackIt.Server.Controllers
         [Authorize(AuthPolicies.ManageAllUsersPolicy)]
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
-        public async Task<IActionResult> UpdateCurrentUser([FromBody] JsonPatchDocument<UserPatchVM> patch)
+        public async Task<IActionResult> UpdateCurrentUser([FromBody] JsonPatchDocument<UserPatchDto> patch)
         {
             return await UpdateUser(GetCurrentUserId(), patch);
         }
@@ -186,13 +186,13 @@ namespace TrackIt.Server.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateUser(string id, [FromBody] JsonPatchDocument<UserPatchVM> patch)
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] JsonPatchDocument<UserPatchDto> patch)
         {
             var appUser = await _userAccountService.GetUserByIdAsync(id);
             if (appUser == null)
                 return NotFound(id);
 
-            var userPVM = _mapper.Map<UserPatchVM>(appUser);
+            var userPVM = _mapper.Map<UserPatchDto>(appUser);
             patch.ApplyTo(userPVM, e => AddModelError(e.ErrorMessage));
 
             if (ModelState.IsValid)
@@ -212,14 +212,14 @@ namespace TrackIt.Server.Controllers
 
         [HttpPost("users")]
         [Authorize(AuthPolicies.ManageAllUsersPolicy)]
-        [ProducesResponseType(201, Type = typeof(UserVM))]
+        [ProducesResponseType(201, Type = typeof(UserDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
-        public async Task<IActionResult> Register([FromBody] UserEditVM user)
+        public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
         {
-            if (string.IsNullOrWhiteSpace(user.NewPassword))
-                AddModelError($"{nameof(user.NewPassword)} is required when registering a new user.",
-                    nameof(user.NewPassword));
+            if (string.IsNullOrWhiteSpace(user.Password))
+                AddModelError($"{nameof(user.Password)} is required when registering a new user.",
+                    nameof(user.Password));
 
             if (user.Roles == null)
                 AddModelError($"{nameof(user.Roles)} is required when registering a new user.", nameof(user.Roles));
@@ -227,7 +227,7 @@ namespace TrackIt.Server.Controllers
             if (ModelState.IsValid)
             {
                 var appUser = _mapper.Map<ApplicationUser>(user);
-                var result = await _userAccountService.CreateUserAsync(appUser, user.Roles!, user.NewPassword!);
+                var result = await _userAccountService.CreateUserAsync(appUser, user.Roles!, user.Password!);
 
                 if (result.Succeeded)
                 {
@@ -241,9 +241,58 @@ namespace TrackIt.Server.Controllers
             return BadRequest(ModelState);
         }
 
+        [HttpPost("users/batch")]
+        [Authorize(AuthPolicies.ManageAllUsersPolicy)]
+        [ProducesResponseType(201, Type = typeof(List<UserDto>))]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(403)]
+        public async Task<IActionResult> RegisterBatch([FromBody] List<UserRegisterDto> users)
+        {
+            var createdUsers = new List<UserDto>();
+
+            foreach (var user in users)
+            {
+                if (string.IsNullOrWhiteSpace(user.Password))
+                {
+                    AddModelError($"{nameof(user.Password)} is required when registering a new user.", nameof(user.Password));
+                    continue;
+                }
+
+                if (user.Roles == null)
+                {
+                    AddModelError($"{nameof(user.Roles)} is required when registering a new user.", nameof(user.Roles));
+                    continue;
+                }
+
+                if (!ModelState.IsValid)
+                    continue;
+
+                var appUser = _mapper.Map<ApplicationUser>(user);
+                var result = await _userAccountService.CreateUserAsync(appUser, user.Roles!, user.Password!);
+
+                if (result.Succeeded)
+                {
+                    var userDto = await GetUserViewModelHelper(appUser.Id);
+                    if (userDto != null)
+                        createdUsers.Add(userDto);
+                }
+                else
+                {
+                    AddModelError(result.Errors);
+                }
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            return CreatedAtAction(nameof(GetUsers), createdUsers);
+        }
+
+
+
         [HttpDelete("users/{id}")]
         [Authorize(AuthPolicies.ManageAllUsersPolicy)]
-        [ProducesResponseType(200, Type = typeof(UserVM))]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
         [ProducesResponseType(400)]
         [ProducesResponseType(403)]
         [ProducesResponseType(404)]
@@ -342,13 +391,13 @@ namespace TrackIt.Server.Controllers
             return NotFound(userId);
         }
 
-        private async Task<UserVM?> GetUserViewModelHelper(string userId)
+        private async Task<UserDto?> GetUserViewModelHelper(string userId)
         {
             var userAndRoles = await _userAccountService.GetUserAndRolesAsync(userId);
             if (userAndRoles == null)
                 return null;
 
-            var userVM = _mapper.Map<UserVM>(userAndRoles.Value.User);
+            var userVM = _mapper.Map<UserDto>(userAndRoles.Value.User);
             userVM.Roles = userAndRoles.Value.Roles;
 
             return userVM;

@@ -7,9 +7,9 @@
 using System.Diagnostics.CodeAnalysis;
 using TrackIt.Core.Models.Account;
 
-namespace TrackIt.Server.ViewModels.Account
+namespace TrackIt.Server.Dto.Account
 {
-    public class PermissionVM
+    public class PermissionDto
     {
         public string? Name { get; set; }
         public string? Value { get; set; }
@@ -17,12 +17,12 @@ namespace TrackIt.Server.ViewModels.Account
         public string? Description { get; set; }
 
         [return: NotNullIfNotNull(nameof(permission))]
-        public static explicit operator PermissionVM?(ApplicationPermission? permission)
+        public static explicit operator PermissionDto?(ApplicationPermission? permission)
         {
             if (permission == null)
                 return null;
 
-            return new PermissionVM
+            return new PermissionDto
             {
                 Name = permission.Name,
                 Value = permission.Value,

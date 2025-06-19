@@ -1,18 +1,20 @@
+using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Logging;
-using Serilog;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
+using Serilog;
 using TrackIt.Core.Infrastructure;
+using TrackIt.Core.Interfaces;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Services.Account;
+using TrackIt.Server.Attributes;
 using TrackIt.Server.Authorization;
 using TrackIt.Server.Configuration;
+using TrackIt.Server.Extensions;
 using TrackIt.Server.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
-using TrackIt.Server.Extensions;
-using AspNetCoreRateLimit;
-using TrackIt.Core.Infrastructure.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +50,20 @@ builder.Services.ConfigureAuthInfrastructure(); // In service extensions
 // Add cors
 builder.Services.AddCors();
 
-builder.Services.AddControllers();
+// Suppress the default automatic model state validation response.
+// This allows custom validation handling (e.g., via ValidationFilterAttribute)
+// so that model validation errors can be returned in a custom format.
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+// Action filters
+// Uncomment this and delete the options in AddControllers if you want to manually add [ServiceFilter(typeof(ValidationFilterAttribute))] in controllers
+builder.Services.AddScoped<ValidationFilterAttribute>();
+
+// Newtonsoft Json is needed for patch requests specifically patch docs
+builder.Services.AddControllers().AddNewtonsoftJson(); 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -79,6 +94,9 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Configurations
+
+// Repositories
+builder.Services.ConfigureRepositories();
 
 // Business Services
 builder.Services.ConfigureBusinessServices(); // In service extensions

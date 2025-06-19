@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TrackIt.Core.Models.Account;
-using TrackIt.Core.Models.TrackIt.Enums;
+using TrackIt.Core.Models.Shipping.Enums;
 
-namespace TrackIt.Core.Models.TrackIt
+namespace TrackIt.Core.Models.Shipping
 {
     public class Shipment : IAuditableEntity
     {
         public Guid Id { get; set; }
+
+        public string Title { get; set; }
 
         public string SupplierId { get; set; }
         public ApplicationUser Supplier { get; set; }

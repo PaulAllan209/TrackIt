@@ -1,10 +1,4 @@
-﻿// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using TrackIt.Core.Models.Account;
 
 namespace TrackIt.Core.Services.Account
@@ -50,14 +44,67 @@ namespace TrackIt.Core.Services.Account
             "Permission to assign roles to users");
 
         /************* SHIPMENT PERMISSIONS *************/
-        //publ
+        public const string ShipmentPermissionGroupName = "Shipment Permissions";
+
+        public static readonly ApplicationPermission CreateShipment = new(
+            "Create Shipment",
+            "shipments.create",
+            ShipmentPermissionGroupName,
+            "Permission to create new shipments");
+
+        public static readonly ApplicationPermission ViewShipment = new(
+            "View Shipment",
+            "shipments.view",
+            ShipmentPermissionGroupName,
+            "Permission to view shipment details");
+
+        public static readonly ApplicationPermission UpdateShipment = new(
+            "Update Shipment",
+            "shipments.update",
+            ShipmentPermissionGroupName,
+            "Permission to modify shipment details");
+
+        public static readonly ApplicationPermission DeleteShipment = new(
+            "Delete Shipment",
+            "shipments.delete",
+            ShipmentPermissionGroupName,
+            "Permission to delete shipments");
+
+        /************* STATUS UPDATE PERMISSIONS *************/
+        public const string StatusUpdatePermissionGroupName = "Status Update Permissions";
+
+        public static readonly ApplicationPermission CreateStatus = new(
+            "Create Status",
+            "status.create",
+            StatusUpdatePermissionGroupName,
+            "Permission to create shipment status");
+
+        public static readonly ApplicationPermission UpdateStatus = new(
+            "Update Status",
+            "status.update",
+            StatusUpdatePermissionGroupName,
+            "Permission to update shipment status");
+
+        public static readonly ApplicationPermission ViewStatusHistory = new(
+            "View Status History",
+            "status.history.view",
+            StatusUpdatePermissionGroupName,
+            "Permission to view status history of shipments");
+
+        public static readonly ApplicationPermission SetStatusDelivered = new(
+            "Set Status to Delivered",
+            "status.set.delivered",
+            StatusUpdatePermissionGroupName,
+            "Permission to mark shipments as delivered only");
 
         /************* ALL PERMISSIONS *************/
 
         public static readonly ReadOnlyCollection<ApplicationPermission> AllPermissions =
             new List<ApplicationPermission> {
                 ViewUsers, ManageUsers,
-                ViewRoles, ManageRoles, AssignRoles
+                ViewRoles, ManageRoles, AssignRoles,
+                CreateShipment, ViewShipment, UpdateShipment, DeleteShipment,
+                CreateStatus, UpdateStatus, ViewStatusHistory, SetStatusDelivered
             }.AsReadOnly();
 
         /************* HELPER METHODS *************/

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TrackIt.Core.Models.TrackIt.Enums
+namespace TrackIt.Core.Models.Shipping.Enums
 {
     public enum ShipmentStatus
     {

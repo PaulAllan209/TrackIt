@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TrackIt.Core.Infrastructure;
 
@@ -11,9 +12,11 @@ using TrackIt.Core.Infrastructure;
 namespace TrackIt.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250616075418_AddedIAuditableEntityStatusUpdate")]
+    partial class AddedIAuditableEntityStatusUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -470,7 +473,7 @@ namespace TrackIt.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("TrackIt.Core.Models.Shipping.Shipment", b =>
+            modelBuilder.Entity("TrackIt.Core.Models.TrackIt.Shipment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -505,10 +508,6 @@ namespace TrackIt.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -524,7 +523,7 @@ namespace TrackIt.Server.Migrations
                     b.ToTable("Shipments");
                 });
 
-            modelBuilder.Entity("TrackIt.Core.Models.Shipping.StatusUpdate", b =>
+            modelBuilder.Entity("TrackIt.Core.Models.TrackIt.StatusUpdate", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -639,7 +638,7 @@ namespace TrackIt.Server.Migrations
                     b.Navigation("Authorization");
                 });
 
-            modelBuilder.Entity("TrackIt.Core.Models.Shipping.Shipment", b =>
+            modelBuilder.Entity("TrackIt.Core.Models.TrackIt.Shipment", b =>
                 {
                     b.HasOne("TrackIt.Core.Models.Account.ApplicationUser", "Recipient")
                         .WithMany("RecipientShipments")
@@ -658,9 +657,9 @@ namespace TrackIt.Server.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("TrackIt.Core.Models.Shipping.StatusUpdate", b =>
+            modelBuilder.Entity("TrackIt.Core.Models.TrackIt.StatusUpdate", b =>
                 {
-                    b.HasOne("TrackIt.Core.Models.Shipping.Shipment", "Shipment")
+                    b.HasOne("TrackIt.Core.Models.TrackIt.Shipment", "Shipment")
                         .WithMany("StatusUpdates")
                         .HasForeignKey("ShipmentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -699,7 +698,7 @@ namespace TrackIt.Server.Migrations
                     b.Navigation("SupplierShipments");
                 });
 
-            modelBuilder.Entity("TrackIt.Core.Models.Shipping.Shipment", b =>
+            modelBuilder.Entity("TrackIt.Core.Models.TrackIt.Shipment", b =>
                 {
                     b.Navigation("StatusUpdates");
                 });

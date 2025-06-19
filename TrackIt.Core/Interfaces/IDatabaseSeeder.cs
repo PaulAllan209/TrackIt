@@ -4,7 +4,7 @@
 // (c) 2024 www.ebenmonney.com/mit-license
 // ---------------------------------------
 
-namespace TrackIt.Core.Infrastructure.Interfaces
+namespace TrackIt.Core.Interfaces
 {
     public interface IDatabaseSeeder
     {

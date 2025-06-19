@@ -6,7 +6,11 @@ using Quartz;
 using Serilog;
 using System.Reflection;
 using TrackIt.Core.Infrastructure;
+using TrackIt.Core.Infrastructure.Repositories;
+using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Services.Account;
+using TrackIt.Core.Services.Shipping;
+using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Authorization;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
@@ -169,13 +173,76 @@ namespace TrackIt.Server.Extensions
                 .AddPolicy(AuthPolicies.ManageAllRolesPolicy,
                     policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles))
                 .AddPolicy(AuthPolicies.AssignAllowedRolesPolicy,
-                    policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles));
+                    policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles))
+
+                // Shipment Policies
+                .AddPolicy(AuthPolicies.CreateShipmentPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.CreateShipment))
+                .AddPolicy(AuthPolicies.ViewShipmentPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ViewShipment))
+                .AddPolicy(AuthPolicies.UpdateShipmentPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.UpdateShipment))
+                .AddPolicy(AuthPolicies.DeleteShipmentPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.DeleteShipment))
+                
+                // Status update policies
+                .AddPolicy(AuthPolicies.CreateStatusPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.CreateStatus))
+                .AddPolicy(AuthPolicies.UpdateStatusPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.UpdateStatus))
+                .AddPolicy(AuthPolicies.ViewStatusHistoryPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ViewStatusHistory))
+
+                // Role-specific policies
+                .AddPolicy(AuthPolicies.SupplierOperationsPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission, 
+                    [
+                        ApplicationPermissions.CreateShipment,
+                        ApplicationPermissions.ViewShipment,
+                        ApplicationPermissions.UpdateShipment,
+                        ApplicationPermissions.DeleteShipment,
+                        ApplicationPermissions.ViewStatusHistory,
+                        ApplicationPermissions.CreateStatus,
+                        ApplicationPermissions.UpdateStatus
+                    ]))
+                .AddPolicy(AuthPolicies.FacilityOperationsPolicy, 
+                    policy => policy.RequireClaim(CustomClaims.Permission,
+                    [
+                        ApplicationPermissions.ViewShipment,
+                        ApplicationPermissions.UpdateStatus,
+                        ApplicationPermissions.ViewStatusHistory
+                    ]))
+                .AddPolicy(AuthPolicies.DeliveryOperationsPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission,
+                    [
+                        ApplicationPermissions.ViewShipment,
+                        ApplicationPermissions.UpdateStatus,
+                        ApplicationPermissions.ViewStatusHistory
+                    ]))
+                .AddPolicy(AuthPolicies.CustomerOperationsPolicy,
+                    policy => policy.RequireClaim(CustomClaims.Permission,
+                    [
+                        ApplicationPermissions.ViewShipment,
+                        ApplicationPermissions.ViewStatusHistory,
+                        ApplicationPermissions.SetStatusDelivered
+                    ]))
+                ;
+                
+
+
+        }
+
+        public static void ConfigureRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IShipmentRepository, ShipmentRepository>();
         }
 
         public static void ConfigureBusinessServices(this IServiceCollection services)
         {
             services.AddScoped<IUserAccountService, UserAccountService>();
             services.AddScoped<IUserRoleService, UserRoleService>();
+
+            services.AddScoped<IShipmentService, ShipmentService>();
         }
     }
 }

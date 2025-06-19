@@ -4,9 +4,9 @@
 // (c) 2024 www.ebenmonney.com/mit-license
 // ---------------------------------------
 
-namespace TrackIt.Server.ViewModels.Account
+namespace TrackIt.Server.Dto.Account
 {
-    public class ClaimVM
+    public class ClaimDto
     {
         public string? Type { get; set; }
         public string? Value { get; set; }

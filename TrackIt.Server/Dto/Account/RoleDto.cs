@@ -8,9 +8,9 @@ using System.ComponentModel.DataAnnotations;
 using TrackIt.Core.Extensions;
 using TrackIt.Server.Attributes;
 
-namespace TrackIt.Server.ViewModels.Account
+namespace TrackIt.Server.Dto.Account
 {
-    public class RoleVM : ISanitizeModel
+    public class RoleDto : ISanitizeModel
     {
         public virtual void SanitizeModel()
         {
@@ -29,6 +29,6 @@ namespace TrackIt.Server.ViewModels.Account
 
         public int UsersCount { get; set; }
 
-        public PermissionVM[]? Permissions { get; set; }
+        public PermissionDto[]? Permissions { get; set; }
     }
 }

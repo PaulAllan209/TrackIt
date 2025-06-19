@@ -9,12 +9,12 @@ namespace TrackIt.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [SanitizeModel]
-    public class BaseApiController : ControllerBase
+    public class BaseApiController<T> : ControllerBase
     {
         protected readonly IMapper _mapper;
-        protected readonly ILogger<BaseApiController> _logger;
+        protected readonly ILogger<T> _logger;
 
-        public BaseApiController(ILogger<BaseApiController> logger, IMapper mapper)
+        public BaseApiController(ILogger<T> logger, IMapper mapper)
         {
             _logger = logger;
             _mapper = mapper;
@@ -23,6 +23,11 @@ namespace TrackIt.Server.Controllers
         protected string GetCurrentUserId(string errorMsg = "Error retrieving the userId for the current user.")
         {
             return Utilities.GetUserId(User) ?? throw new UserNotFoundException(errorMsg);
+        }
+
+        protected string[] GetCurrentUserRoles(string errorMsg = "Error retrieving the roles for the current user.")
+        {
+            return Utilities.GetRoles(User) ?? throw new UserRoleException(errorMsg); 
         }
 
         protected void AddModelError(IEnumerable<string> errors, string key = "")
