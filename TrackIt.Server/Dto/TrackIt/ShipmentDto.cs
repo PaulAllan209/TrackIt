@@ -8,6 +8,8 @@ namespace TrackIt.Server.Dto.TrackIt
     {
         public Guid Id { get; set; }
 
+        public string title { get; set; }
+
         public string SupplierId { get; set; }
 
         public string RecipientName { get; set; }

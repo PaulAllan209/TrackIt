@@ -74,7 +74,12 @@ namespace TrackIt.Core.Infrastructure.Repositories
             return null;
         }
 
-        public async Task SaveChanges()
+        public void DeleteShipment(Shipment shipment)
+        {
+            Delete(shipment);
+        }
+
+        public async Task SaveAsync()
         {
             await SaveChangesAsync();
         }

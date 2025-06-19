@@ -54,8 +54,4 @@
     <ProjectReference Include="..\TrackIt.Core\TrackIt.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ActionFilters\" />
-  </ItemGroup>
-
 </Project>

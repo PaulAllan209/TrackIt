@@ -13,6 +13,7 @@ namespace TrackIt.Core.Interfaces.Repository
         Task CreateShipmentAsync(Shipment shipment);
         Task<IEnumerable<Shipment>> GetAllShipmentsAsync(string userType, bool trackChanges, string? userId = null);
         Task<Shipment?> GetShipmentByIdAsync(string userType, string shipmentId, bool trackChanges, string? userId = null);
-        Task SaveChanges();
+        void DeleteShipment(Shipment shipment);
+        Task SaveAsync();
     }
 }

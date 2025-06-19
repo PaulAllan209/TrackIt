@@ -8,7 +8,7 @@ using TrackIt.Core.Models.Account;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.Services.Shipping.Interfaces;
-using TrackIt.Server.ActionFilters;
+using TrackIt.Server.Attributes;
 using TrackIt.Server.Dto.TrackIt;
 using TrackIt.Server.Services;
 
@@ -34,6 +34,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpPost]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize]
         public async Task<IActionResult> CreateShipment([FromBody] ShipmentForCreationDto shipmentForCreationDto)
         {
@@ -66,6 +67,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize]
         public async Task<IActionResult> GetAllShipments([FromQuery] string? role = null)
         {
@@ -86,6 +88,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("{id}", Name = nameof(GetShipmentById))]
+        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize]
         public async Task<IActionResult> GetShipmentById(string id)
         {
@@ -102,6 +105,24 @@ namespace TrackIt.Server.Controllers
             var shipmentDto = _mapper.Map<ShipmentDto>(shipment);
 
             return Ok(shipmentDto);
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteShipmentById(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+                return BadRequest("Shipment ID cannot be empty.");
+
+            var userId = GetCurrentUserId();
+            var userRoles = GetCurrentUserRoles();
+
+            // Get the proper role to use for data access - prioritizing higher privilages
+            string roleToUse = GetHighestPrivilegeRole(userRoles);
+
+            await _shipmentService.DeleteShipmentAsync(roleToUse, id, trackChanges: true, userId);
+
+            return NoContent();
         }
 
         private string GetHighestPrivilegeRole(string[] userRoles)

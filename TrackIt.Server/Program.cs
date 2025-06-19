@@ -9,7 +9,7 @@ using TrackIt.Core.Infrastructure;
 using TrackIt.Core.Interfaces;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Services.Account;
-using TrackIt.Server.ActionFilters;
+using TrackIt.Server.Attributes;
 using TrackIt.Server.Authorization;
 using TrackIt.Server.Configuration;
 using TrackIt.Server.Extensions;
@@ -60,12 +60,9 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 // Action filters
 // Uncomment this and delete the options in AddControllers if you want to manually add [ServiceFilter(typeof(ValidationFilterAttribute))] in controllers
-//builder.Services.AddScoped<ValidationFilterAttribute>();
+builder.Services.AddScoped<ValidationFilterAttribute>();
 
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<ValidationFilterAttribute>();
-});
+builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

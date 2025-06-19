@@ -24,7 +24,7 @@ namespace TrackIt.Core.Services.Shipping
                 throw new ArgumentNullException(nameof(shipment));
 
             await _shipmentRepository.CreateShipmentAsync(shipment);
-            await _shipmentRepository.SaveChanges();
+            await _shipmentRepository.SaveAsync();
 
             return shipment;
         }
@@ -60,6 +60,29 @@ namespace TrackIt.Core.Services.Shipping
             }
 
             return shipmentEntity;
+        }
+
+        public async Task DeleteShipmentAsync(string userType, string shipmentId, bool trackChanges, string? userId = null)
+        {
+            if (string.IsNullOrWhiteSpace(userType))
+            {
+                throw new ArgumentNullException("User type cannot be empty.", nameof(userType));
+            }
+            if (string.IsNullOrWhiteSpace(shipmentId))
+            {
+                throw new ArgumentNullException("Shipment ID cannot be empty.", nameof(shipmentId));
+            }
+            
+            var shipmentEntityToDelete = await _shipmentRepository.GetShipmentByIdAsync(userType, shipmentId, trackChanges, userId);
+
+            if (shipmentEntityToDelete == null)
+            {
+                throw new ShipmentNotFoundException($"Shipment with ID '{shipmentId}' could not be found.");
+            }
+
+            // Repository layer actions
+            _shipmentRepository.DeleteShipment(shipmentEntityToDelete);
+            await _shipmentRepository.SaveAsync();
         }
     }
 }
