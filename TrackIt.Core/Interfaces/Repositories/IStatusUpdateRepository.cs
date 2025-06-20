@@ -11,6 +11,10 @@ namespace TrackIt.Core.Interfaces.Repositories
     public interface IStatusUpdateRepository
     {
         Task CreateStatusUpdateAsync(StatusUpdate statusUpdate);
+        Task<IEnumerable<StatusUpdate>> GetAllStatusUpdatesAsync(bool isAdmin, bool trackChanges, string? userId = null);
+        Task<IEnumerable<StatusUpdate>> GetAllStatusUpdatesByShipmentIdAsync(string shipmentId, bool trackChanges);
+        Task<StatusUpdate?> GetStatusUpdatesByIdAsync(string statusUpdateId, bool isAdmin, bool trackChanges, string? userId = null);
+        void DeleteStatusUpdate(StatusUpdate statusUpdate);
         Task SaveAsync();
     }
 }

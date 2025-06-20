@@ -24,7 +24,7 @@ namespace TrackIt.Core.Infrastructure.Repositories
 
         public async Task<IEnumerable<Shipment>> GetAllShipmentsAsync(string userType, bool trackChanges, string? userId = null)
         {
-            if(userType == UserType.Admin && !string.IsNullOrEmpty(userId))
+            if(userType == UserType.Admin)
             {
                 return await FindAll(trackChanges).ToListAsync();
             }

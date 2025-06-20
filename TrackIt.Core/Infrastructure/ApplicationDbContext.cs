@@ -64,6 +64,10 @@ namespace TrackIt.Core.Infrastructure
             builder.Entity<Shipment>()
                 .Property(s => s.CurrentStatus)
                 .HasConversion<string>();
+
+            builder.Entity<StatusUpdate>()
+                .Property(su => su.Status)
+                .HasConversion<string>();
         }
 
         public override int SaveChanges()

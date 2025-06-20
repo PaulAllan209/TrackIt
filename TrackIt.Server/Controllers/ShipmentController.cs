@@ -134,6 +134,14 @@ namespace TrackIt.Server.Controllers
                 ModelState.AddModelError(error.AffectedObject?.ToString() ?? "", error.ErrorMessage);
             });
 
+
+            // IMPORTANT: After applying the patch, ModelState may contain errors from invalid patch operations.
+            // However, ModelState does NOT automatically validate data annotations on the patched DTO.
+            // If you want to ensure data annotation validation, call TryValidateModel(shipmentDto) here.
+            // Example: TryValidateModel(shipmentDto);
+
+            // This check ensures that no invalid data (from patch ops or model validation) is persisted.
+            // If ModelState is invalid, return 422 Unprocessable Entity with error details.
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
