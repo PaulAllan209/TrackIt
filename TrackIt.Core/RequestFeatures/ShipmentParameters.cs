@@ -8,5 +8,6 @@ namespace TrackIt.Core.RequestFeatures
 {
     public class ShipmentParameters : RequestParameters
     {
+        public string? SearchTitle { get; set; }
     }
 }

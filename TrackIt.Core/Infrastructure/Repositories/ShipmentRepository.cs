@@ -46,6 +46,7 @@ namespace TrackIt.Core.Infrastructure.Repositories
 
             var count = await query.CountAsync();
             var items = await query
+                .SearchTitle(shipmentParameters.SearchTitle)
                 .Skip((shipmentParameters.PageNumber - 1) * shipmentParameters.PageSize)
                 .Take(shipmentParameters.PageSize)
                 .ToListAsync();
