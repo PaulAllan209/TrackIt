@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrackIt.Core.Infrastructure.Repositories.Extensions;
 using TrackIt.Core.Interfaces.Repositories;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.RequestFeatures;
@@ -30,6 +31,7 @@ namespace TrackIt.Core.Infrastructure.Repositories
 
             var count = await query.CountAsync();
             var items = await query
+                .Sort(statusUpdateParameters.OrderBy)
                 .Skip((statusUpdateParameters.PageNumber - 1) * statusUpdateParameters.PageSize)
                 .Take(statusUpdateParameters.PageSize)
                 .ToListAsync();

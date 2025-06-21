@@ -7,27 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 using TrackIt.Core.Models.Shipping;
 
-namespace TrackIt.Core.Infrastructure.Repositories
+namespace TrackIt.Core.Infrastructure.Repositories.Extensions
 {
-    public static class RepositoryShipmentExtensions
+    public static class RepositoryStatusUpdateExtensions
     {
-        public static IQueryable<Shipment> SearchTitle(this IQueryable<Shipment> shipments, string? searchTitle)
-        {
-            if (string.IsNullOrWhiteSpace(searchTitle))
-                return shipments;
-
-            var lowerCaseTerm = searchTitle.Trim().ToLower();
-
-            return shipments.Where(s => s.Title.ToLower().Contains(lowerCaseTerm));
-        }
-
-        public static IQueryable<Shipment> Sort(this IQueryable<Shipment> shipments, string? orderByQueryString)
+        public static IQueryable<StatusUpdate> Sort(this IQueryable<StatusUpdate> statusUpdates, string? orderByQueryString)
         {
             if (string.IsNullOrWhiteSpace(orderByQueryString))
-                return shipments.OrderBy(s => s.CreatedDate);
+                return statusUpdates.OrderBy(su => su.CreatedDate);
 
             var orderParams = orderByQueryString.Trim().Split(',');
-            var propertyInfos = typeof(Shipment).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var propertyInfos = typeof(StatusUpdate).GetProperties(BindingFlags.Public | BindingFlags.Instance);
             var orderQueryBuilder = new StringBuilder();
 
             foreach (var param in orderParams)
@@ -41,7 +31,7 @@ namespace TrackIt.Core.Infrastructure.Repositories
                 if (objectProperty == null)
                     continue;
 
-                var direction = param.EndsWith(" desc") ? "descending" : "ascending";
+                var direction = param.EndsWith(" asc") ? "ascending" : "descending";
 
                 orderQueryBuilder.Append($"{objectProperty.Name.ToString()} {direction},");
             }
@@ -49,10 +39,10 @@ namespace TrackIt.Core.Infrastructure.Repositories
             var orderQuery = orderQueryBuilder.ToString().TrimEnd(',', ' ');
 
             if (string.IsNullOrWhiteSpace(orderQuery))
-                return shipments.OrderBy(s => s.CreatedDate);
+                return statusUpdates.OrderBy(s => s.CreatedDate);
 
             // Use System.Linq.Dynamic.Core to handle dynamic ordering
-            return shipments.OrderBy(orderQuery);
+            return statusUpdates.OrderBy(orderQuery);
         }
     }
 }
