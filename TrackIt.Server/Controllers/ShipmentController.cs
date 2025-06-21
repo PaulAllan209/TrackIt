@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Models.Shipping;
@@ -83,8 +84,11 @@ namespace TrackIt.Server.Controllers
             string roleToUse = !string.IsNullOrEmpty(role) ? role : GetHighestPrivilegeRole(userRoles);
 
             // For admin user you may not need userId but the repository expects it, so pass it anyway
-            var shipmentEntities = await _shipmentService.GetAllShipmentAsync(roleToUse, shipmentParameters, trackChanges: false, userId);
-            var shipmentDtos = _mapper.Map<IEnumerable<ShipmentDto>>(shipmentEntities);
+            var pagedResultShipments = await _shipmentService.GetAllShipmentAsync(roleToUse, shipmentParameters, trackChanges: false, userId);
+
+            var shipmentDtos = _mapper.Map<IEnumerable<ShipmentDto>>(pagedResultShipments.shipments);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResultShipments.metaData));
 
             return Ok(shipmentDtos);
         }

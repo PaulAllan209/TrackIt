@@ -30,16 +30,16 @@ namespace TrackIt.Core.Services.Shipping
             return shipment;
         }
 
-        public async Task<IEnumerable<Shipment>> GetAllShipmentAsync(string userType, ShipmentParameters shipmentParameters, bool trackChanges, string? userId = null)
+        public async Task<(PagedList<Shipment> shipments, MetaData metaData)> GetAllShipmentAsync(string userType, ShipmentParameters shipmentParameters, bool trackChanges, string? userId = null)
         {
             if(string.IsNullOrWhiteSpace(userType))
             {
                 throw new ArgumentNullException("User type cannot be empty.", nameof(userType));
             }
 
-            var shipmentEntities = await _shipmentRepository.GetAllShipmentsAsync(userType, shipmentParameters, trackChanges, userId);
+            var shipmentEntitiesWithMetaData = await _shipmentRepository.GetAllShipmentsAsync(userType, shipmentParameters, trackChanges, userId);
 
-            return shipmentEntities;
+            return (shipments: shipmentEntitiesWithMetaData, metaData: shipmentEntitiesWithMetaData.MetaData);
         }
 
         public async Task<Shipment> GetShipmentByIdAsync(string userType, string shipmentId, bool trackChanges, string? userId = null)
