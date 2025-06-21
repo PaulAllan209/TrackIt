@@ -116,6 +116,8 @@ namespace TrackIt.Server.Controllers
             return Ok(statusUpdateDto);
         }
 
+        // TODO: Get latest status update of shipment
+
         [HttpPatch("{statusUpdateId}")]
         [Authorize]
         public async Task<IActionResult> PatchStatusUpdate(string statusUpdateId, [FromBody] JsonPatchDocument<StatusUpdateDto> patchDoc)

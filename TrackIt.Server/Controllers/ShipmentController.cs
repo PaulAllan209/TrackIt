@@ -9,6 +9,7 @@ using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Models.Shipping.Enums;
+using TrackIt.Core.RequestFeatures;
 using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Attributes;
 using TrackIt.Server.Dto.TrackIt;
@@ -69,9 +70,8 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize]
-        public async Task<IActionResult> GetAllShipments([FromQuery] string? role = null)
+        public async Task<IActionResult> GetAllShipments([FromQuery] ShipmentParameters shipmentParameters, string? role = null)
         {
             var userId = GetCurrentUserId();
             var userRoles = GetCurrentUserRoles();
@@ -83,14 +83,13 @@ namespace TrackIt.Server.Controllers
             string roleToUse = !string.IsNullOrEmpty(role) ? role : GetHighestPrivilegeRole(userRoles);
 
             // For admin user you may not need userId but the repository expects it, so pass it anyway
-            var shipmentEntities = await _shipmentService.GetAllShipmentAsync(roleToUse, trackChanges: false, userId);
+            var shipmentEntities = await _shipmentService.GetAllShipmentAsync(roleToUse, shipmentParameters, trackChanges: false, userId);
             var shipmentDtos = _mapper.Map<IEnumerable<ShipmentDto>>(shipmentEntities);
 
             return Ok(shipmentDtos);
         }
 
         [HttpGet("{id}", Name = nameof(GetShipmentById))]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize]
         public async Task<IActionResult> GetShipmentById(string id)
         {

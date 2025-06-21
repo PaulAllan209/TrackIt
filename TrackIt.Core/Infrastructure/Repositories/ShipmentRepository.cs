@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Models.Shipping.Enums;
+using TrackIt.Core.RequestFeatures;
 
 namespace TrackIt.Core.Infrastructure.Repositories
 {
@@ -22,27 +23,42 @@ namespace TrackIt.Core.Infrastructure.Repositories
             await CreateAsync(shipment);
         }
 
-        public async Task<IEnumerable<Shipment>> GetAllShipmentsAsync(string userType, bool trackChanges, string? userId = null)
+        public async Task<IEnumerable<Shipment>> GetAllShipmentsAsync(string userType, ShipmentParameters shipmentParameters, bool trackChanges, string? userId = null)
         {
             if(userType == UserType.Admin)
             {
-                return await FindAll(trackChanges).ToListAsync();
+                return await FindAll(trackChanges)
+                    .Skip((shipmentParameters.PageNumber - 1) * shipmentParameters.PageSize)
+                    .Take(shipmentParameters.PageSize)
+                    .ToListAsync();
             }
             else if(userType == UserType.Supplier && !string.IsNullOrEmpty(userId))
             {
-                return await FindByCondition(s => s.SupplierId == userId, trackChanges).ToListAsync();
+                return await FindByCondition(s => s.SupplierId == userId, trackChanges)
+                    .Skip((shipmentParameters.PageNumber - 1) * shipmentParameters.PageSize)
+                    .Take(shipmentParameters.PageSize)
+                    .ToListAsync();
             }
             else if (userType == UserType.Facility && !string.IsNullOrEmpty(userId))
             {
-                return await FindByCondition(s => s.StatusUpdates.Any(su => su.UpdatedBy == userId), trackChanges).ToListAsync();
+                return await FindByCondition(s => s.StatusUpdates.Any(su => su.UpdatedBy == userId), trackChanges)
+                    .Skip((shipmentParameters.PageNumber - 1) * shipmentParameters.PageSize)
+                    .Take(shipmentParameters.PageSize)
+                    .ToListAsync();
             }
             else if (userType == UserType.Delivery && !string.IsNullOrEmpty(userId))
             {
-                return await FindByCondition(s => s.StatusUpdates.Any(su => su.UpdatedBy == userId), trackChanges).ToListAsync();
+                return await FindByCondition(s => s.StatusUpdates.Any(su => su.UpdatedBy == userId), trackChanges)
+                    .Skip((shipmentParameters.PageNumber - 1) * shipmentParameters.PageSize)
+                    .Take(shipmentParameters.PageSize)
+                    .ToListAsync();
             }
             else if (userType == UserType.Customer && !string.IsNullOrEmpty(userId))
             {
-                return await FindByCondition(s => s.RecipientId == userId, trackChanges).ToListAsync();
+                return await FindByCondition(s => s.RecipientId == userId, trackChanges)
+                    .Skip((shipmentParameters.PageNumber - 1) * shipmentParameters.PageSize)
+                    .Take(shipmentParameters.PageSize)
+                    .ToListAsync();
             }
 
             return new List<Shipment>();

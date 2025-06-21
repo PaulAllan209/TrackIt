@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Shipping;
+using TrackIt.Core.RequestFeatures;
 using TrackIt.Core.Services.Shipping.Exceptions;
 using TrackIt.Core.Services.Shipping.Interfaces;
 
@@ -29,14 +30,14 @@ namespace TrackIt.Core.Services.Shipping
             return shipment;
         }
 
-        public async Task<IEnumerable<Shipment>> GetAllShipmentAsync(string userType, bool trackChanges, string? userId = null)
+        public async Task<IEnumerable<Shipment>> GetAllShipmentAsync(string userType, ShipmentParameters shipmentParameters, bool trackChanges, string? userId = null)
         {
             if(string.IsNullOrWhiteSpace(userType))
             {
                 throw new ArgumentNullException("User type cannot be empty.", nameof(userType));
             }
 
-            var shipmentEntities = await _shipmentRepository.GetAllShipmentsAsync(userType, trackChanges, userId);
+            var shipmentEntities = await _shipmentRepository.GetAllShipmentsAsync(userType, shipmentParameters, trackChanges, userId);
 
             return shipmentEntities;
         }
