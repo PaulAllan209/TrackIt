@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using System.Runtime.Serialization;
+using System.Text.Json;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Models.Shipping.Enums;
+using TrackIt.Core.RequestFeatures;
 using TrackIt.Core.Services.Shipping;
 using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Attributes;
@@ -59,7 +61,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAllStatusUpdates()
+        public async Task<IActionResult> GetAllStatusUpdates([FromQuery] StatusUpdateParameters statusUpdateParameters)
         {
             var userId = GetCurrentUserId();
             var userRoles = GetCurrentUserRoles();
@@ -67,9 +69,12 @@ namespace TrackIt.Server.Controllers
             // Check if the user is an admin
             bool isAdmin = userRoles.Contains(UserType.Admin, StringComparer.OrdinalIgnoreCase);
 
-            var statusUpdateEntities = await _statusUpdateService.GetAllStatusUpdatesAsync(isAdmin, trackChanges: false, userId);
+            var pagedResultStatusUpdates = await _statusUpdateService.GetAllStatusUpdatesAsync(isAdmin, statusUpdateParameters, trackChanges: false, userId);
 
-            var statusUpdateDtos = _mapper.Map<IEnumerable<StatusUpdateDto>>(statusUpdateEntities);
+            var statusUpdateDtos = _mapper.Map<IEnumerable<StatusUpdateDto>>(pagedResultStatusUpdates.statusUpdates);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResultStatusUpdates.metaData));
+
 
             return Ok(statusUpdateDtos);
         }

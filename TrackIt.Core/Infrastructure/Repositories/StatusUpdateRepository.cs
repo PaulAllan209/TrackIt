@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TrackIt.Core.Interfaces.Repositories;
 using TrackIt.Core.Models.Shipping;
+using TrackIt.Core.RequestFeatures;
 
 namespace TrackIt.Core.Infrastructure.Repositories
 {
@@ -20,15 +21,20 @@ namespace TrackIt.Core.Infrastructure.Repositories
             await CreateAsync(statusUpdate);
         }
 
-        public async Task<IEnumerable<StatusUpdate>> GetAllStatusUpdatesAsync(bool isAdmin, bool trackChanges, string? userId = null)
+        public async Task<PagedList<StatusUpdate>> GetAllStatusUpdatesAsync(bool isAdmin, StatusUpdateParameters statusUpdateParameters, bool trackChanges, string? userId = null)
         {
-            if (isAdmin)
-                return await FindAll(trackChanges).ToListAsync();
+            IQueryable<StatusUpdate> query = FindAll(trackChanges);
 
-            else if (!string.IsNullOrEmpty(userId))
-                return await FindByCondition(su => (su.CreatedBy == userId) || (su.UpdatedBy == userId), trackChanges).ToListAsync();
+            if (!string.IsNullOrEmpty(userId) && !isAdmin)
+                query = query.Where(su => (su.CreatedBy == userId) || (su.UpdatedBy == userId));
 
-            return new List<StatusUpdate>(); // Return empty list if no conditionals passed
+            var count = await query.CountAsync();
+            var items = await query
+                .Skip((statusUpdateParameters.PageNumber - 1) * statusUpdateParameters.PageSize)
+                .Take(statusUpdateParameters.PageSize)
+                .ToListAsync();
+
+            return new PagedList<StatusUpdate>(items, count, statusUpdateParameters.PageNumber, statusUpdateParameters.PageSize); 
             
         }
 

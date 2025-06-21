@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TrackIt.Core.Interfaces.Repositories;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Shipping;
+using TrackIt.Core.RequestFeatures;
 using TrackIt.Core.Services.Shipping.Exceptions;
 using TrackIt.Core.Services.Shipping.Interfaces;
 
@@ -31,14 +32,14 @@ namespace TrackIt.Core.Services.Shipping
             return statusUpdate;
         }
 
-        public async Task<IEnumerable<StatusUpdate>> GetAllStatusUpdatesAsync(bool isAdmin, bool trackChanges, string? userId = null)
+        public async Task<(PagedList<StatusUpdate> statusUpdates, MetaData metaData)> GetAllStatusUpdatesAsync(bool isAdmin, StatusUpdateParameters statusUpdateParameters, bool trackChanges, string? userId = null)
         {
             if (!isAdmin && string.IsNullOrEmpty(userId))
                 throw new ArgumentNullException(nameof(userId), "UserId is required for non-admin requests.");
 
-            var statusUpdateEntities = await _statusUpdateRepository.GetAllStatusUpdatesAsync(isAdmin, trackChanges, userId);
+            var statusUpdatesWithMetadata = await _statusUpdateRepository.GetAllStatusUpdatesAsync(isAdmin, statusUpdateParameters, trackChanges, userId);
 
-            return statusUpdateEntities;
+            return (statusUpdates: statusUpdatesWithMetadata, metaData: statusUpdatesWithMetadata.MetaData);
         }
 
         public async Task<IEnumerable<StatusUpdate>> GetAllStatusUpdatesByShipmentIdAsync(string shipmentId, bool trackChanges)
