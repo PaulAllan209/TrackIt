@@ -23,5 +23,7 @@ namespace TrackIt.Core.RequestFeatures
                 _pageSize = (value > maxPageSize) ? maxPageSize : value;
             }
         }
+
+        public string? OrderBy { get; set; }
     }
 }

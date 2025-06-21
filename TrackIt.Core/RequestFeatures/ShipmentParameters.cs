@@ -8,6 +8,7 @@ namespace TrackIt.Core.RequestFeatures
 {
     public class ShipmentParameters : RequestParameters
     {
+        public ShipmentParameters() => OrderBy = "CreatedDate";
         public string? SearchTitle { get; set; }
     }
 }
