@@ -5,7 +5,7 @@
 // ---------------------------------------
 
 using Microsoft.AspNetCore.Identity;
-using TrackIt.Core.Models.Shop;
+using TrackIt.Core.Models.Shipping;
 
 namespace TrackIt.Core.Models.Account
 {
@@ -30,10 +30,15 @@ namespace TrackIt.Core.Models.Account
         public bool IsEnabled { get; set; }
         public bool IsLockedOut => LockoutEnabled && LockoutEnd >= DateTimeOffset.UtcNow;
 
+        // From IAuditableEntity
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime UpdatedDate { get; set; }
+
+        public ICollection<Shipment> SupplierShipments { get; set; }
+        public ICollection<Shipment> RecipientShipments { get; set; }
+
 
         /// <summary>
         /// Navigation property for the roles this user belongs to.
@@ -44,10 +49,5 @@ namespace TrackIt.Core.Models.Account
         /// Navigation property for the claims this user possesses.
         /// </summary>
         public ICollection<IdentityUserClaim<string>> Claims { get; } = [];
-
-        /// <summary>
-        /// Demo Navigation property for orders this user has processed
-        /// </summary>
-        public ICollection<Order> Orders { get; } = [];
     }
 }

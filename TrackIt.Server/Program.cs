@@ -1,51 +1,34 @@
-using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Authorization;
+using AspNetCoreRateLimit;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Logging;
-using Serilog;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
-using Quartz;
+using Serilog;
 using TrackIt.Core.Infrastructure;
+using TrackIt.Core.Interfaces;
 using TrackIt.Core.Models.Account;
-using TrackIt.Core.Services;
 using TrackIt.Core.Services.Account;
-using TrackIt.Core.Services.Shop;
+using TrackIt.Server.Attributes;
 using TrackIt.Server.Authorization;
-using TrackIt.Server.Authorization.Requirements;
 using TrackIt.Server.Configuration;
+using TrackIt.Server.Extensions;
 using TrackIt.Server.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
-using TrackIt.Server.Extensions;
-using AspNetCoreRateLimit;
 
 var builder = WebApplication.CreateBuilder(args);
 
 /************* ADD SERVICES *************/
 
 // Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
+builder.Services.ConfigureSerilog(builder.Configuration); // In service extensions
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
-                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
-
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(connectionString, b => b.MigrationsAssembly(migrationsAssembly));
-
-    // Register the entity sets needed by OpenIddict.
-    options.UseOpenIddict();
-});
+// Configure sql server connection
+builder.Services.ConfigureSqlContext(builder.Configuration); // In service extensions
 
 // For Rate Limiting
 builder.Services.AddMemoryCache();
-builder.Services.ConfigureRateLimitingOptions();
+builder.Services.ConfigureRateLimitingOptions(); // In service extensions
 builder.Services.AddHttpContextAccessor();
 
 // Register the Identity services.
@@ -54,109 +37,33 @@ builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
     .AddDefaultTokenProviders();
 
 // Configure Identity options and password complexity here
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    // User settings
-    options.User.RequireUniqueEmail = true;
-    options.Password.RequireDigit = true;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = false;
-
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
-    options.Lockout.MaxFailedAccessAttempts = 10;
-
-    // Password settings
-    /*
-    options.Password.RequiredLength = 8;
-
-    // Lockout settings
-    */
-
-    // Configure Identity to use the same JWT claims as OpenIddict
-    options.ClaimsIdentity.UserNameClaimType = Claims.Name;
-    options.ClaimsIdentity.UserIdClaimType = Claims.Subject;
-    options.ClaimsIdentity.RoleClaimType = Claims.Role;
-    options.ClaimsIdentity.EmailClaimType = Claims.Email;
-});
+builder.Services.ConfigureIdentityOptions(); // In service extensions
 
 // OpenIddict offers native integration with Quartz.NET to perform scheduled tasks
 // Configure OpenIddict periodic pruning of orphaned authorizations/tokens from the database
-builder.Services.AddQuartz(options =>
-{
-    options.UseSimpleTypeLoader();
-    options.UseInMemoryStore();
-});
+builder.Services.ConfigureQuartz(); // In service extensions
 
-// Register the Quartz.NET service and configure it to block shutdown until jobs are complete.
-builder.Services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+builder.Services.ConfigureOpenIddict(); // In service extensions
 
-builder.Services.AddOpenIddict()
-    .AddCore(options =>
-    {
-        options.UseEntityFrameworkCore()
-               .UseDbContext<ApplicationDbContext>();
-
-        options.UseQuartz();
-    })
-    .AddServer(options =>
-    {
-        // Enable the token endpoint
-        options.SetTokenEndpointUris("connect/token");
-
-        options.AllowPasswordFlow()
-               .AllowRefreshTokenFlow();
-
-        options.RegisterScopes(
-            Scopes.Profile,
-            Scopes.Email,
-            Scopes.Address,
-            Scopes.Phone,
-            Scopes.Roles);
-
-        // Register the signing and encryption credentials.
-        options.AddDevelopmentEncryptionCertificate()
-                .AddDevelopmentSigningCertificate();
-        
-        // Register the ASP.NET Core host and configure the ASP.NET Core-specific options.
-        options.UseAspNetCore()
-               .EnableTokenEndpointPassthrough();
-    })
-    // Register the OpenIddict validation components.
-    .AddValidation(options =>
-    {
-        // Import the configuration from the local OpenIddict server instance.
-        options.UseLocalServer();
-
-        // Register the ASP.NET Core host.
-        options.UseAspNetCore();
-    });
-
-builder.Services.AddAuthentication(o =>
-{
-    o.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-    o.DefaultAuthenticateScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-    o.DefaultChallengeScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
-});
-
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy(AuthPolicies.ViewAllUsersPolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ViewUsers))
-    .AddPolicy(AuthPolicies.ManageAllUsersPolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageUsers))
-    .AddPolicy(AuthPolicies.ViewAllRolesPolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ViewRoles))
-    .AddPolicy(AuthPolicies.ViewRoleByRoleNamePolicy,
-        policy => policy.Requirements.Add(new ViewRoleAuthorizationRequirement()))
-    .AddPolicy(AuthPolicies.ManageAllRolesPolicy,
-        policy => policy.RequireClaim(CustomClaims.Permission, ApplicationPermissions.ManageRoles))
-    .AddPolicy(AuthPolicies.AssignAllowedRolesPolicy,
-        policy => policy.Requirements.Add(new AssignRolesAuthorizationRequirement()));
+builder.Services.ConfigureAuthInfrastructure(); // In service extensions
 
 // Add cors
 builder.Services.AddCors();
 
-builder.Services.AddControllers();
+// Suppress the default automatic model state validation response.
+// This allows custom validation handling (e.g., via ValidationFilterAttribute)
+// so that model validation errors can be returned in a custom format.
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+// Action filters
+// Uncomment this and delete the options in AddControllers if you want to manually add [ServiceFilter(typeof(ValidationFilterAttribute))] in controllers
+builder.Services.AddScoped<ValidationFilterAttribute>();
+
+// Newtonsoft Json is needed for patch requests specifically patch docs
+builder.Services.AddControllers().AddNewtonsoftJson(); 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -188,29 +95,20 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 // Configurations
 
+// Repositories
+builder.Services.ConfigureRepositories();
+
 // Business Services
-builder.Services.AddScoped<IUserAccountService, UserAccountService>();
-builder.Services.AddScoped<IUserRoleService, UserRoleService>();
-builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<IOrdersService, OrdersService>();
+builder.Services.ConfigureBusinessServices(); // In service extensions
 
 // Other Services
 builder.Services.AddScoped<IUserIdAccessor, UserIdAccessor>();
-
-// Auth Handlers
-builder.Services.AddSingleton<IAuthorizationHandler, ViewUserAuthorizationHandler>();
-builder.Services.AddSingleton<IAuthorizationHandler, ManageUserAuthorizationHandler>();
-builder.Services.AddSingleton<IAuthorizationHandler, ViewRoleAuthorizationHandler>();
-builder.Services.AddSingleton<IAuthorizationHandler, AssignRolesAuthorizationHandler>();
 
 // DB Creation and Seeding
 builder.Services.AddTransient<IDatabaseSeeder, DatabaseSeeder>();
 
 //File Logger
 builder.Host.UseSerilog();
-//builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
-
 
 var app = builder.Build();
 

@@ -1,10 +1,4 @@
-﻿// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TrackIt.Core.Infrastructure;
 using TrackIt.Core.Models.Account;
@@ -188,9 +182,6 @@ namespace TrackIt.Core.Services.Account
         public async Task<(bool Success, string[] Errors)> TestCanDeleteUserAsync(string userId)
         {
             var errors = new List<string>();
-
-            if (await _context.Orders.Where(o => o.CashierId == userId).AnyAsync())
-                errors.Add("User has associated orders");
 
             //canDelete = !await ; //Do other tests...
 

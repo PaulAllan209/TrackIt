@@ -110,6 +110,7 @@ namespace TrackIt.Server.Controllers
             var identity = principal.Identity as ClaimsIdentity
                 ?? throw new InvalidOperationException("The ClaimsPrincipal's Identity is null.");
 
+            // CustomClaims is just a static class where you define string constants for your own claim types
             if (user.JobTitle != null) identity.SetClaim(CustomClaims.JobTitle, user.JobTitle);
             if (user.FullName != null) identity.SetClaim(CustomClaims.FullName, user.FullName);
             if (user.Configuration != null) identity.SetClaim(CustomClaims.Configuration, user.Configuration);
