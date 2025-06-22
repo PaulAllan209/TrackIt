@@ -101,6 +101,10 @@ namespace TrackIt.Server.Controllers
             if (string.IsNullOrEmpty(id))
                 return BadRequest("Shipment ID cannot be empty.");
 
+            // Validate GUIDs for Id to prevent unnecessary DB calls
+            if (!Guid.TryParse(id, out _))
+                return BadRequest("Invalid shipment ID format.");
+
             var userId = GetCurrentUserId();
             var userRoles = GetCurrentUserRoles();
 
@@ -114,7 +118,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpPatch("{id}")]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.UpdateShipmentPolicy)]
         public async Task<IActionResult> PatchShipment(string id, [FromBody] JsonPatchDocument<ShipmentDto> patchDoc)
         {
             if (patchDoc == null)
@@ -146,6 +150,7 @@ namespace TrackIt.Server.Controllers
 
             // This check ensures that no invalid data (from patch ops or model validation) is persisted.
             // If ModelState is invalid, return 422 Unprocessable Entity with error details.
+            TryValidateModel(shipmentDto);
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
