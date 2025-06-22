@@ -59,6 +59,7 @@ namespace TrackIt.Server.Configuration
             CreateMap<IdentityRoleClaim<string>, PermissionDto>()
                 .ConvertUsing(s => ((PermissionDto)ApplicationPermissions.GetPermissionByValue(s.ClaimValue))!);
 
+            /************************** SHIPMENT **************************/
             CreateMap<ShipmentDto, Shipment>()
                 .ForMember(dest => dest.CurrentStatus, opt => opt.MapFrom(src => Enum.Parse<ShipmentStatus>(src.CurrentStatus)))
                 .ReverseMap();
