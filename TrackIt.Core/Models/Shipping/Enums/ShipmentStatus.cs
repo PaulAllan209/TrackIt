@@ -13,6 +13,8 @@ namespace TrackIt.Core.Models.Shipping.Enums
         ToShip,
         [EnumMember(Value = "ToReceive")]
         ToReceive,
+        [EnumMember(Value = "ToDeliver")]
+        ToDeliver,
         [EnumMember(Value = "Completed")]
         Completed
     }

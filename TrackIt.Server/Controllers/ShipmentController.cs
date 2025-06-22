@@ -13,6 +13,7 @@ using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.RequestFeatures;
 using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Attributes;
+using TrackIt.Server.Authorization;
 using TrackIt.Server.Dto.TrackIt;
 using TrackIt.Server.Services;
 
@@ -39,7 +40,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.SupplierOperationsPolicy)]
         public async Task<IActionResult> CreateShipment([FromBody] ShipmentForCreationDto shipmentForCreationDto)
         {
             if (!ModelState.IsValid)
