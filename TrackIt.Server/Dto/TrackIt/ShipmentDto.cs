@@ -22,6 +22,5 @@ namespace TrackIt.Server.Dto.TrackIt
         public string? UpdatedBy { get; init; }
         public DateTime CreatedDate { get; init; }
         public DateTime UpdatedDate { get; init; }
-        public ICollection<StatusUpdate> StatusUpdates { get; set; } = new List<StatusUpdate>();
     }
 }

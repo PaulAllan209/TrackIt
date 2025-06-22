@@ -67,7 +67,7 @@ namespace TrackIt.Server.Controllers
             var shipmentDtoToReturn = _mapper.Map<ShipmentDto>(shipmentEntityReturned);
 
             return CreatedAtAction(nameof(GetShipmentById),
-                new { id = shipmentDtoToReturn.Id },
+                new { shipmentId = shipmentDtoToReturn.Id },
                 shipmentDtoToReturn);
         }
 
@@ -94,24 +94,18 @@ namespace TrackIt.Server.Controllers
             return Ok(shipmentDtos);
         }
 
-        [HttpGet("{id}", Name = nameof(GetShipmentById))]
+        [HttpGet("{shipmentId}", Name = nameof(GetShipmentById))]
         [Authorize]
-        public async Task<IActionResult> GetShipmentById(string id)
+        public async Task<IActionResult> GetShipmentById(string shipmentId)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(shipmentId))
                 return BadRequest("Shipment ID cannot be empty.");
 
             // Validate GUIDs for Id to prevent unnecessary DB calls
-            if (!Guid.TryParse(id, out _))
+            if (!Guid.TryParse(shipmentId, out _))
                 return BadRequest("Invalid shipment ID format.");
 
-            var userId = GetCurrentUserId();
-            var userRoles = GetCurrentUserRoles();
-
-            // Get the proper role to use for data access - prioritizing higher privilages
-            string roleToUse = GetHighestPrivilegeRole(userRoles);
-
-            var shipment = await _shipmentService.GetShipmentByIdAsync(roleToUse, id, trackChanges: false, userId);
+            var shipment = await _shipmentService.GetShipmentByIdAsync(shipmentId, trackChanges: false);
             var shipmentDto = _mapper.Map<ShipmentDto>(shipment);
 
             return Ok(shipmentDto);
@@ -124,11 +118,7 @@ namespace TrackIt.Server.Controllers
             if (patchDoc == null)
                 return BadRequest("Patch document cannot be null.");
 
-            var userId = GetCurrentUserId();
-            var userRoles = GetCurrentUserRoles();
-            string roleToUse = GetHighestPrivilegeRole(userRoles);
-
-            var shipmentToUpdateEntity = await _shipmentService.GetShipmentByIdAsync(roleToUse, id, trackChanges: true, userId);
+            var shipmentToUpdateEntity = await _shipmentService.GetShipmentByIdAsync(id, trackChanges: true);
 
             if (shipmentToUpdateEntity == null)
                 return NotFound();
@@ -163,20 +153,14 @@ namespace TrackIt.Server.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{shipmentId}")]
         [Authorize]
-        public async Task<IActionResult> DeleteShipmentById(string id)
+        public async Task<IActionResult> DeleteShipmentById(string shipmentId)
         {
-            if (string.IsNullOrEmpty(id))
+            if (string.IsNullOrEmpty(shipmentId))
                 return BadRequest("Shipment ID cannot be empty.");
 
-            var userId = GetCurrentUserId();
-            var userRoles = GetCurrentUserRoles();
-
-            // Get the proper role to use for data access - prioritizing higher privilages
-            string roleToUse = GetHighestPrivilegeRole(userRoles);
-
-            await _shipmentService.DeleteShipmentAsync(roleToUse, id, trackChanges: true, userId);
+            await _shipmentService.DeleteShipmentAsync(shipmentId, trackChanges: true);
 
             return NoContent();
         }

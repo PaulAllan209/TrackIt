@@ -42,18 +42,12 @@ namespace TrackIt.Core.Services.Shipping
             return (shipments: shipmentEntitiesWithMetaData, metaData: shipmentEntitiesWithMetaData.MetaData);
         }
 
-        public async Task<Shipment> GetShipmentByIdAsync(string userType, string shipmentId, bool trackChanges, string? userId = null)
+        public async Task<Shipment> GetShipmentByIdAsync(string shipmentId, bool trackChanges)
         {
-            if (string.IsNullOrWhiteSpace(userType))
-            {
-                throw new ArgumentNullException("User type cannot be empty.", nameof(userType));
-            }
             if (string.IsNullOrWhiteSpace(shipmentId))
-            {
                 throw new ArgumentNullException("Shipment ID cannot be empty.", nameof(shipmentId));
-            }
 
-            var shipmentEntity = await _shipmentRepository.GetShipmentByIdAsync(userType, shipmentId, trackChanges, userId);
+            var shipmentEntity = await _shipmentRepository.GetShipmentByIdAsync(shipmentId, trackChanges);
 
             if (shipmentEntity == null)
             {
@@ -69,18 +63,12 @@ namespace TrackIt.Core.Services.Shipping
             await _shipmentRepository.SaveAsync();
         }
 
-        public async Task DeleteShipmentAsync(string userType, string shipmentId, bool trackChanges, string? userId = null)
+        public async Task DeleteShipmentAsync(string shipmentId, bool trackChanges)
         {
-            if (string.IsNullOrWhiteSpace(userType))
-            {
-                throw new ArgumentNullException("User type cannot be empty.", nameof(userType));
-            }
             if (string.IsNullOrWhiteSpace(shipmentId))
-            {
                 throw new ArgumentNullException("Shipment ID cannot be empty.", nameof(shipmentId));
-            }
             
-            var shipmentEntityToDelete = await _shipmentRepository.GetShipmentByIdAsync(userType, shipmentId, trackChanges, userId);
+            var shipmentEntityToDelete = await _shipmentRepository.GetShipmentByIdAsync(shipmentId, trackChanges);
 
             if (shipmentEntityToDelete == null)
             {

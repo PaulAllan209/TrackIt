@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json;
@@ -49,6 +50,11 @@ namespace TrackIt.Server.Controllers
                     $"{ShipmentStatus.ToShip.ToString()}, " +
                     $"{ShipmentStatus.ToReceive.ToString()}, and " +
                     $"{ShipmentStatus.Completed.ToString()}");
+
+            var userId = GetCurrentUserId();
+            var userRoles = GetCurrentUserRoles();
+
+            string roleToUse = GetHighestPrivilegeRole(userRoles);
 
             var statusUpdateEntity = _mapper.Map<StatusUpdate>(statusUpdateForCreationDto);
 
@@ -193,6 +199,21 @@ namespace TrackIt.Server.Controllers
             await _statusUpdateService.DeleteStatusUpdateById(statusUpdateId, isAdmin, trackChanges: true, userId);
 
             return NoContent();
+        }
+        private string GetHighestPrivilegeRole(string[] userRoles)
+        {
+            if (userRoles.Contains(UserType.Admin, StringComparer.OrdinalIgnoreCase))
+                return UserType.Admin;
+            if (userRoles.Contains(UserType.Supplier, StringComparer.OrdinalIgnoreCase))
+                return UserType.Supplier;
+            if (userRoles.Contains(UserType.Facility, StringComparer.OrdinalIgnoreCase))
+                return UserType.Facility;
+            if (userRoles.Contains(UserType.Delivery, StringComparer.OrdinalIgnoreCase))
+                return UserType.Delivery;
+            if (userRoles.Contains(UserType.Customer, StringComparer.OrdinalIgnoreCase))
+                return UserType.Customer;
+
+            return UserType.Customer; // Default to lowest privilege
         }
 
         // Helper method for checking if the user inputs Status is correct.
