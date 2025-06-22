@@ -15,6 +15,7 @@ using TrackIt.Core.RequestFeatures;
 using TrackIt.Core.Services.Shipping;
 using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Attributes;
+using TrackIt.Server.Authorization;
 using TrackIt.Server.Dto.TrackIt;
 
 namespace TrackIt.Server.Controllers
@@ -40,6 +41,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [Authorize(Policy = AuthPolicies.CreateStatusPolicy)]
         public async Task<IActionResult> CreateStatusUpdate([FromBody] StatusUpdateForCreationDto statusUpdateForCreationDto)
         {
             if (!ModelState.IsValid)
@@ -66,7 +68,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.ViewStatusHistoryPolicy)]
         public async Task<IActionResult> GetAllStatusUpdates([FromQuery] StatusUpdateParameters statusUpdateParameters)
         {
             var userId = GetCurrentUserId();
@@ -86,7 +88,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("ByShipmentId/{shipmentId}")]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.ViewStatusHistoryPolicy)]
         public async Task<IActionResult> GetAllStatusUpdatesByShipmentId(string shipmentId)
         {
             if (string.IsNullOrEmpty(shipmentId))
@@ -104,7 +106,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("{statusUpdateId}")]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.ViewStatusHistoryPolicy)]
         public async Task<IActionResult> GetStatusUpdateById(string statusUpdateId)
         {
             if (string.IsNullOrEmpty(statusUpdateId))
@@ -127,10 +129,8 @@ namespace TrackIt.Server.Controllers
             return Ok(statusUpdateDto);
         }
 
-        // TODO: Get latest status update of shipment
-
         [HttpPatch("{statusUpdateId}")]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.UpdateStatusPolicy)]
         public async Task<IActionResult> PatchStatusUpdate(string statusUpdateId, [FromBody] JsonPatchDocument<StatusUpdateDto> patchDoc)
         {
             if (patchDoc == null)
@@ -180,7 +180,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpDelete("{statusUpdateId}")]
-        [Authorize]
+        [Authorize(Roles = UserType.Admin)]
         public async Task<IActionResult> DeleteStatusUpdateById(string statusUpdateId)
         {
             if (string.IsNullOrEmpty(statusUpdateId))
@@ -199,21 +199,6 @@ namespace TrackIt.Server.Controllers
             await _statusUpdateService.DeleteStatusUpdateById(statusUpdateId, isAdmin, trackChanges: true, userId);
 
             return NoContent();
-        }
-        private string GetHighestPrivilegeRole(string[] userRoles)
-        {
-            if (userRoles.Contains(UserType.Admin, StringComparer.OrdinalIgnoreCase))
-                return UserType.Admin;
-            if (userRoles.Contains(UserType.Supplier, StringComparer.OrdinalIgnoreCase))
-                return UserType.Supplier;
-            if (userRoles.Contains(UserType.Facility, StringComparer.OrdinalIgnoreCase))
-                return UserType.Facility;
-            if (userRoles.Contains(UserType.Delivery, StringComparer.OrdinalIgnoreCase))
-                return UserType.Delivery;
-            if (userRoles.Contains(UserType.Customer, StringComparer.OrdinalIgnoreCase))
-                return UserType.Customer;
-
-            return UserType.Customer; // Default to lowest privilege
         }
 
         // Helper method for checking if the user inputs Status is correct.

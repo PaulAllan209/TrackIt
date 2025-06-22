@@ -50,6 +50,7 @@ namespace TrackIt.Core.Infrastructure
                 await EnsureRoleAsync(facilityRoleName, "The facility role", 
                 [
                     ApplicationPermissions.ViewShipment,
+                    ApplicationPermissions.CreateStatus,
                     ApplicationPermissions.UpdateStatus,
                     ApplicationPermissions.ViewStatusHistory
                 ]);
@@ -57,6 +58,7 @@ namespace TrackIt.Core.Infrastructure
                 await EnsureRoleAsync(deliveryRoleName, "The delivery role", 
                 [
                     ApplicationPermissions.ViewShipment,
+                    ApplicationPermissions.CreateStatus,
                     ApplicationPermissions.UpdateStatus,
                     ApplicationPermissions.ViewStatusHistory
                 ]);
@@ -64,6 +66,7 @@ namespace TrackIt.Core.Infrastructure
                 await EnsureRoleAsync(customerRoleName, "The customer role",
                 [
                     ApplicationPermissions.ViewShipment,
+                    ApplicationPermissions.CreateStatus,
                     ApplicationPermissions.ViewStatusHistory,
                     ApplicationPermissions.SetStatusDelivered
                 ]);

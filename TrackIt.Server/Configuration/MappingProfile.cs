@@ -85,6 +85,9 @@ namespace TrackIt.Server.Configuration
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore());
 
+            CreateMap<ShipmentForPatchDto, Shipment>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<Shipment, ShipmentForPatchDto>();
 
             /************************** STATUS UPDATE **************************/
             CreateMap<StatusUpdate, StatusUpdateDto>()

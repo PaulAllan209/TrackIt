@@ -40,7 +40,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        [Authorize(Policy = AuthPolicies.SupplierOperationsPolicy)]
+        [Authorize(Policy = AuthPolicies.CreateShipmentPolicy)]
         public async Task<IActionResult> CreateShipment([FromBody] ShipmentForCreationDto shipmentForCreationDto)
         {
             if (!ModelState.IsValid)
@@ -72,7 +72,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.ViewShipmentPolicy)]
         public async Task<IActionResult> GetAllShipments([FromQuery] ShipmentParameters shipmentParameters, string? role = null)
         {
             var userId = GetCurrentUserId();
@@ -95,7 +95,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("{shipmentId}", Name = nameof(GetShipmentById))]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.ViewShipmentPolicy)]
         public async Task<IActionResult> GetShipmentById(string shipmentId)
         {
             if (string.IsNullOrEmpty(shipmentId))
@@ -113,7 +113,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpPatch("{id}")]
         [Authorize(Policy = AuthPolicies.UpdateShipmentPolicy)]
-        public async Task<IActionResult> PatchShipment(string id, [FromBody] JsonPatchDocument<ShipmentDto> patchDoc)
+        public async Task<IActionResult> PatchShipment(string id, [FromBody] JsonPatchDocument<ShipmentForPatchDto> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest("Patch document cannot be null.");
@@ -124,10 +124,10 @@ namespace TrackIt.Server.Controllers
                 return NotFound();
 
             // Map entity to DTO
-            var shipmentDto = _mapper.Map<ShipmentDto>(shipmentToUpdateEntity);
+            var shipmentForPatchDto = _mapper.Map<ShipmentForPatchDto>(shipmentToUpdateEntity);
 
             // Apply the patch
-            patchDoc.ApplyTo(shipmentDto, error =>
+            patchDoc.ApplyTo(shipmentForPatchDto, error =>
             {
                 ModelState.AddModelError(error.AffectedObject?.ToString() ?? "", error.ErrorMessage);
             });
@@ -140,12 +140,12 @@ namespace TrackIt.Server.Controllers
 
             // This check ensures that no invalid data (from patch ops or model validation) is persisted.
             // If ModelState is invalid, return 422 Unprocessable Entity with error details.
-            TryValidateModel(shipmentDto);
+            TryValidateModel(shipmentForPatchDto);
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 
             // Map DTO back to entity
-            _mapper.Map(shipmentDto, shipmentToUpdateEntity);
+            _mapper.Map(shipmentForPatchDto, shipmentToUpdateEntity);
 
             // This function call just calls save changes in the repository layer
             await _shipmentService.UpdateShipmentAsync();
@@ -154,7 +154,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpDelete("{shipmentId}")]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.DeleteShipmentPolicy)]
         public async Task<IActionResult> DeleteShipmentById(string shipmentId)
         {
             if (string.IsNullOrEmpty(shipmentId))
@@ -163,22 +163,6 @@ namespace TrackIt.Server.Controllers
             await _shipmentService.DeleteShipmentAsync(shipmentId, trackChanges: true);
 
             return NoContent();
-        }
-
-        private string GetHighestPrivilegeRole(string[] userRoles)
-        {
-            if (userRoles.Contains(UserType.Admin, StringComparer.OrdinalIgnoreCase))
-                return UserType.Admin;
-            if (userRoles.Contains(UserType.Supplier, StringComparer.OrdinalIgnoreCase))
-                return UserType.Supplier;
-            if (userRoles.Contains(UserType.Facility, StringComparer.OrdinalIgnoreCase))
-                return UserType.Facility;
-            if (userRoles.Contains(UserType.Delivery, StringComparer.OrdinalIgnoreCase))
-                return UserType.Delivery;
-            if (userRoles.Contains(UserType.Customer, StringComparer.OrdinalIgnoreCase))
-                return UserType.Customer;
-
-            return UserType.Customer; // Default to lowest privilege
         }
     }
 }
