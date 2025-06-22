@@ -5,12 +5,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Account;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Models.Shipping.Enums;
+using TrackIt.Core.RequestFeatures;
 using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Attributes;
+using TrackIt.Server.Authorization;
 using TrackIt.Server.Dto.TrackIt;
 using TrackIt.Server.Services;
 
@@ -37,7 +40,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.SupplierOperationsPolicy)]
         public async Task<IActionResult> CreateShipment([FromBody] ShipmentForCreationDto shipmentForCreationDto)
         {
             if (!ModelState.IsValid)
@@ -69,9 +72,8 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize]
-        public async Task<IActionResult> GetAllShipments([FromQuery] string? role = null)
+        public async Task<IActionResult> GetAllShipments([FromQuery] ShipmentParameters shipmentParameters, string? role = null)
         {
             var userId = GetCurrentUserId();
             var userRoles = GetCurrentUserRoles();
@@ -83,14 +85,16 @@ namespace TrackIt.Server.Controllers
             string roleToUse = !string.IsNullOrEmpty(role) ? role : GetHighestPrivilegeRole(userRoles);
 
             // For admin user you may not need userId but the repository expects it, so pass it anyway
-            var shipmentEntities = await _shipmentService.GetAllShipmentAsync(roleToUse, trackChanges: false, userId);
-            var shipmentDtos = _mapper.Map<IEnumerable<ShipmentDto>>(shipmentEntities);
+            var pagedResultShipments = await _shipmentService.GetAllShipmentAsync(roleToUse, shipmentParameters, trackChanges: false, userId);
+
+            var shipmentDtos = _mapper.Map<IEnumerable<ShipmentDto>>(pagedResultShipments.shipments);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResultShipments.metaData));
 
             return Ok(shipmentDtos);
         }
 
         [HttpGet("{id}", Name = nameof(GetShipmentById))]
-        [ServiceFilter(typeof(ValidationFilterAttribute))]
         [Authorize]
         public async Task<IActionResult> GetShipmentById(string id)
         {
@@ -134,6 +138,14 @@ namespace TrackIt.Server.Controllers
                 ModelState.AddModelError(error.AffectedObject?.ToString() ?? "", error.ErrorMessage);
             });
 
+
+            // IMPORTANT: After applying the patch, ModelState may contain errors from invalid patch operations.
+            // However, ModelState does NOT automatically validate data annotations on the patched DTO.
+            // If you want to ensure data annotation validation, call TryValidateModel(shipmentDto) here.
+            // Example: TryValidateModel(shipmentDto);
+
+            // This check ensures that no invalid data (from patch ops or model validation) is persisted.
+            // If ModelState is invalid, return 422 Unprocessable Entity with error details.
             if (!ModelState.IsValid)
                 return UnprocessableEntity(ModelState);
 

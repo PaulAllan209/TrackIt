@@ -4,24 +4,24 @@ using TrackIt.Core.Models.Shipping.Enums;
 
 namespace TrackIt.Server.Dto.TrackIt
 {
-    public class ShipmentDto
+    public record ShipmentDto
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
-        public string title { get; set; }
+        public string title { get; init; }
 
-        public string SupplierId { get; set; }
+        public string SupplierId { get; init; }
 
-        public string RecipientName { get; set; }
-        public string RecipientAddress { get; set; }
-        public string RecipientId { get; set; }
+        public string RecipientName { get; init; }
+        public string RecipientAddress { get; init; }
+        public string RecipientId { get; init; }
 
-        public string CurrentStatus { get; set; }
-        public DateTime? DeliveredAt { get; set; }
-        public string? CreatedBy { get; set; }
-        public string? UpdatedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime UpdatedDate { get; set; }
+        public string CurrentStatus { get; init; }
+        public DateTime? DeliveredAt { get; init; }
+        public string? CreatedBy { get; init; }
+        public string? UpdatedBy { get; init; }
+        public DateTime CreatedDate { get; init; }
+        public DateTime UpdatedDate { get; init; }
         public ICollection<StatusUpdate> StatusUpdates { get; set; } = new List<StatusUpdate>();
     }
 }

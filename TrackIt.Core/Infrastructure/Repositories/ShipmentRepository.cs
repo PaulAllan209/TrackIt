@@ -4,9 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TrackIt.Core.Infrastructure.Repositories.Extensions;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Models.Shipping.Enums;
+using TrackIt.Core.RequestFeatures;
 
 namespace TrackIt.Core.Infrastructure.Repositories
 {
@@ -19,33 +21,39 @@ namespace TrackIt.Core.Infrastructure.Repositories
 
         public async Task CreateShipmentAsync(Shipment shipment)
         {
-            Create(shipment);
+            await CreateAsync(shipment);
         }
 
-        public async Task<IEnumerable<Shipment>> GetAllShipmentsAsync(string userType, bool trackChanges, string? userId = null)
+        public async Task<PagedList<Shipment>> GetAllShipmentsAsync(string userType, ShipmentParameters shipmentParameters, bool trackChanges, string? userId = null)
         {
-            if(userType == UserType.Admin && !string.IsNullOrEmpty(userId))
+            IQueryable<Shipment> query = FindAll(trackChanges);
+
+            if (userType == UserType.Supplier && !string.IsNullOrEmpty(userId))
             {
-                return await FindAll(trackChanges).ToListAsync();
-            }
-            else if(userType == UserType.Supplier && !string.IsNullOrEmpty(userId))
-            {
-                return await FindByCondition(s => s.SupplierId == userId, trackChanges).ToListAsync();
+                query = query.Where(s => s.SupplierId == userId);
             }
             else if (userType == UserType.Facility && !string.IsNullOrEmpty(userId))
             {
-                return await FindByCondition(s => s.StatusUpdates.Any(su => su.UpdatedBy == userId), trackChanges).ToListAsync();
+                query = query.Where(s => s.StatusUpdates.Any(su => su.UpdatedBy == userId));
             }
             else if (userType == UserType.Delivery && !string.IsNullOrEmpty(userId))
             {
-                return await FindByCondition(s => s.StatusUpdates.Any(su => su.UpdatedBy == userId), trackChanges).ToListAsync();
+                query = query.Where(s => s.StatusUpdates.Any(su => su.UpdatedBy == userId));
             }
             else if (userType == UserType.Customer && !string.IsNullOrEmpty(userId))
             {
-                return await FindByCondition(s => s.RecipientId == userId, trackChanges).ToListAsync();
+                query = query.Where(s => s.RecipientId == userId);
             }
 
-            return new List<Shipment>();
+            var count = await query.CountAsync();
+            var items = await query
+                .Sort(shipmentParameters.OrderBy)
+                .SearchTitle(shipmentParameters.SearchTitle)
+                .Skip((shipmentParameters.PageNumber - 1) * shipmentParameters.PageSize)
+                .Take(shipmentParameters.PageSize)
+                .ToListAsync();
+
+            return new PagedList<Shipment>(items, count, shipmentParameters.PageNumber, shipmentParameters.PageSize);
         }
 
         public async Task<Shipment?> GetShipmentByIdAsync(string userType, string shipmentId, bool trackChanges, string? userId = null)

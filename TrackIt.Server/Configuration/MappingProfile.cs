@@ -83,6 +83,19 @@ namespace TrackIt.Server.Configuration
                 .ForMember(dest => dest.DeliveredAt, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore());
+
+
+            /************************** STATUS UPDATE **************************/
+            CreateMap<StatusUpdate, StatusUpdateDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
+
+            CreateMap<StatusUpdateDto, StatusUpdate>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<ShipmentStatus>(src.Status)))
+                .ForMember(dest => dest.Id, opt => opt.Ignore()) // Prevent overwriting the guid
+                .ForMember(dest => dest.Shipment, opt => opt.Ignore()); // Ignore navigation property
+
+            CreateMap<StatusUpdateForCreationDto, StatusUpdate>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<ShipmentStatus>(src.Status, true)));
         }
     }
 }
