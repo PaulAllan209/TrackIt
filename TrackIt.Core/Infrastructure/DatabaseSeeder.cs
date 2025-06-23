@@ -64,7 +64,9 @@ namespace TrackIt.Core.Infrastructure
                     ApplicationPermissions.DeleteShipment.Value,
                     ApplicationPermissions.ViewStatusHistory.Value,
                     ApplicationPermissions.CreateStatus.Value,
-                    ApplicationPermissions.UpdateStatus.Value
+                    ApplicationPermissions.UpdateStatus.Value,
+
+                    ApplicationPermissions.ViewUsers
                 });
 
                 await EnsureRoleAsync(facilityRoleName, "The facility role", 
@@ -73,7 +75,9 @@ namespace TrackIt.Core.Infrastructure
                     ApplicationPermissions.ViewShipment.Value,
                     ApplicationPermissions.CreateStatus.Value,
                     ApplicationPermissions.UpdateStatus.Value,
-                    ApplicationPermissions.ViewStatusHistory.Value
+                    ApplicationPermissions.ViewStatusHistory.Value,
+
+                    ApplicationPermissions.ViewUsers
                 });
 
                 await EnsureRoleAsync(deliveryRoleName, "The delivery role", 
@@ -82,7 +86,9 @@ namespace TrackIt.Core.Infrastructure
                     ApplicationPermissions.ViewShipment.Value,
                     ApplicationPermissions.CreateStatus.Value,
                     ApplicationPermissions.UpdateStatus.Value,
-                    ApplicationPermissions.ViewStatusHistory.Value
+                    ApplicationPermissions.ViewStatusHistory.Value,
+
+                    ApplicationPermissions.ViewUsers
                 });
 
                 await EnsureRoleAsync(customerRoleName, "The customer role",
@@ -91,7 +97,9 @@ namespace TrackIt.Core.Infrastructure
                     ApplicationPermissions.ViewShipment.Value,
                     ApplicationPermissions.CreateStatus.Value,
                     ApplicationPermissions.ViewStatusHistory.Value,
-                    ApplicationPermissions.SetStatusDelivered.Value
+                    ApplicationPermissions.SetStatusDelivered.Value,
+
+                    ApplicationPermissions.ViewUsers
                 });
 
                 // Get values from user secrets

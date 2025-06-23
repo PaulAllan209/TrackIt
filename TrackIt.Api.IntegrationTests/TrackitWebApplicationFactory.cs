@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.Migrations.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using OpenIddict.Server;
+using OpenIddict.Server.AspNetCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +44,12 @@ namespace TrackIt.Api.IntegrationTests
                     options.UseOpenIddict();
                 });
 
+                // Also configure the ASP.NET Core integration
+                services.Configure<OpenIddictServerAspNetCoreOptions>(options =>
+                {
+                    options.DisableTransportSecurityRequirement = true; // This allows HTTP
+                });
+
                 var dbContext = CreateDbContext(services);
                 dbContext.Database.EnsureDeleted();
             });
@@ -58,8 +66,6 @@ namespace TrackIt.Api.IntegrationTests
 
             var connString = configuration.GetConnectionString("TrackIt");
             return connString;
-
-            //return "Server=SUPERPOTATOPCV2\\TEW_SQLEXPRESS;Database=TrackItDB_test;Trusted_Connection=True;TrustServerCertificate=true;MultipleActiveResultSets=true";
         }
 
         private static ApplicationDbContext CreateDbContext(IServiceCollection services)
