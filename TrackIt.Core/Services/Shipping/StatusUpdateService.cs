@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TrackIt.Core.Interfaces.Repositories;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Shipping;
+using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.RequestFeatures;
 using TrackIt.Core.Services.Shipping.Exceptions;
 using TrackIt.Core.Services.Shipping.Interfaces;
@@ -32,6 +33,9 @@ namespace TrackIt.Core.Services.Shipping
 
             if (shipmentEntity == null)
                 throw new ShipmentNotFoundException();
+
+            if (statusUpdate.Status == ShipmentStatus.Delivered)
+                shipmentEntity.DeliveredAt = DateTime.UtcNow;
 
             shipmentEntity.CurrentStatus = statusUpdate.Status;
             await _statusUpdateRepository.CreateStatusUpdateAsync(statusUpdate);
