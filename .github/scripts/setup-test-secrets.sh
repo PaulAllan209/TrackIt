@@ -15,10 +15,11 @@ get() {
 # 1) Init (can safely fail if already initialized)
 dotnet user-secrets init --project $PROJECT || true
 
-# 2) Connection String
+# 2) Connection String - handle special case with proper quoting like backslashes
+# Use a different connection string for CI/CD
 dotnet user-secrets set \
   "ConnectionStrings:TrackIt" \
-  "$(get '.ConnectionStrings.TrackIt')" \
+  "Server=localhost;Database=TrackItDB_test;User ID=sa;Password=YourPassword;TrustServerCertificate=true;MultipleActiveResultSets=true" \
   --project $PROJECT
 
 # 3) DefaultAccounts
