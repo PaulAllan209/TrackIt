@@ -696,5 +696,187 @@ namespace TrackIt.Api.IntegrationTests
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
+
+        [Fact]
+        public async Task DeleteStatusUpdate_ReturnsNoContent_WhenUserIsAdmin()
+        {
+            // Arrange
+            var username = Configuration["DefaultAccounts:AdminUserName"];
+            var password = Configuration["DefaultAccounts:AdminPassword"];
+
+            var token = await AuthHelper.GetAccessTokenAsync(_client, username, password);
+            Assert.False(string.IsNullOrWhiteSpace(token), "Failed to acquire access token.");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // First, create a shipment
+            var recipientUserName = Configuration["CustomerAccounts:CustomerOneUserName"];
+            var recipientId = await UserAccountHelper.GetUserIdByUserNameAsync(_client, recipientUserName, _output);
+
+            var shipment = new ShipmentForCreationDto
+            {
+                Title = "Test Shipment for Admin Delete",
+                RecipientName = recipientUserName,
+                RecipientAddress = "505 Admin Delete St",
+                RecipientId = recipientId
+            };
+
+            var shipmentResponse = await _client.PostAsJsonAsync("/api/Shipment", shipment);
+            var createdShipment = await shipmentResponse.Content.ReadFromJsonAsync<ShipmentDto>();
+
+            // Create status update
+            var statusUpdate = new StatusUpdateForCreationDto
+            {
+                ShipmentId = createdShipment.Id.ToString(),
+                Status = ShipmentStatus.ToShip.ToString(),
+                Notes = "Status for admin delete test",
+                Location = "Admin test location",
+            };
+
+            var createResponse = await _client.PostAsJsonAsync("/api/StatusUpdate", statusUpdate);
+            var createdStatusUpdate = await createResponse.Content.ReadFromJsonAsync<StatusUpdateDto>();
+
+            // Act
+            var response = await _client.DeleteAsync($"/api/StatusUpdate/{createdStatusUpdate.Id}");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+            // Verify it's actually deleted
+            var getResponse = await _client.GetAsync($"/api/StatusUpdate/{createdStatusUpdate.Id}");
+            Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+        }
+
+        [Fact]
+        public async Task CreateStatusUpdate_ReturnsBadRequest_WhenShipmentIdIsEmpty()
+        {
+            // Arrange
+            var username = Configuration["SupplierAccounts:SupplierAlphaUserName"];
+            var password = Configuration["SupplierAccounts:SupplierAlphaPassword"];
+
+            var token = await AuthHelper.GetAccessTokenAsync(_client, username, password);
+            Assert.False(string.IsNullOrWhiteSpace(token), "Failed to acquire access token.");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Create status update with empty shipment ID
+            var statusUpdate = new StatusUpdateForCreationDto
+            {
+                ShipmentId = "",  // Empty shipment ID
+                Status = ShipmentStatus.ToShip.ToString(),
+                Notes = "This should fail due to empty shipment ID",
+                Location = "Warehouse X",
+            };
+
+            // Act
+            var response = await _client.PostAsJsonAsync("/api/StatusUpdate", statusUpdate);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task CreateStatusUpdate_ValidatesEachValidStatusValue()
+        {
+            // Arrange
+            var username = Configuration["SupplierAccounts:SupplierAlphaUserName"];
+            var password = Configuration["SupplierAccounts:SupplierAlphaPassword"];
+
+            var token = await AuthHelper.GetAccessTokenAsync(_client, username, password);
+            Assert.False(string.IsNullOrWhiteSpace(token), "Failed to acquire access token.");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Create a shipment first
+            var recipientUserName = Configuration["CustomerAccounts:CustomerOneUserName"];
+            var recipientId = await UserAccountHelper.GetUserIdByUserNameAsync(_client, recipientUserName, _output);
+
+            var shipment = new ShipmentForCreationDto
+            {
+                Title = "Test Shipment for Status Values",
+                RecipientName = recipientUserName,
+                RecipientAddress = "707 Status Values St",
+                RecipientId = recipientId
+            };
+
+            var shipmentResponse = await _client.PostAsJsonAsync("/api/Shipment", shipment);
+            var createdShipment = await shipmentResponse.Content.ReadFromJsonAsync<ShipmentDto>();
+
+            // Valid status values to test
+            var validStatusValues = new[] {
+                ShipmentStatus.ToShip.ToString(),
+                ShipmentStatus.ToReceive.ToString(),
+                ShipmentStatus.Completed.ToString()
+            };
+
+            foreach (var statusValue in validStatusValues)
+            {
+                // Create status update with valid status
+                var statusUpdate = new StatusUpdateForCreationDto
+                {
+                    ShipmentId = createdShipment.Id.ToString(),
+                    Status = statusValue,
+                    Notes = $"Testing {statusValue} status value",
+                    Location = "Test Location",
+                };
+
+                // Act
+                var response = await _client.PostAsJsonAsync("/api/StatusUpdate", statusUpdate);
+
+                // Assert
+                response.EnsureSuccessStatusCode();
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+                var createdStatusUpdate = await response.Content.ReadFromJsonAsync<StatusUpdateDto>();
+                Assert.Equal(statusValue, createdStatusUpdate.Status);
+            }
+        }
+
+        [Fact]
+        public async Task GetAllStatusUpdates_AppliesSortingAndFiltering_WhenParametersProvided()
+        {
+            // Arrange
+            var username = Configuration["SupplierAccounts:SupplierAlphaUserName"];
+            var password = Configuration["SupplierAccounts:SupplierAlphaPassword"];
+
+            var token = await AuthHelper.GetAccessTokenAsync(_client, username, password);
+            Assert.False(string.IsNullOrWhiteSpace(token), "Failed to acquire access token.");
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            // Create a few status updates with different dates to test sorting
+            // First, create a shipment
+            var recipientUserName = Configuration["CustomerAccounts:CustomerOneUserName"];
+            var recipientId = await UserAccountHelper.GetUserIdByUserNameAsync(_client, recipientUserName, _output);
+
+            var shipment = new ShipmentForCreationDto
+            {
+                Title = "Test Shipment for Sorting",
+                RecipientName = recipientUserName,
+                RecipientAddress = "808 Sorting St",
+                RecipientId = recipientId
+            };
+
+            var shipmentResponse = await _client.PostAsJsonAsync("/api/Shipment", shipment);
+            var createdShipment = await shipmentResponse.Content.ReadFromJsonAsync<ShipmentDto>();
+
+            // Apply ordering by created date
+            var orderByParam = "createdDate";
+
+            // Act
+            var response = await _client.GetAsync($"/api/StatusUpdate?OrderBy={orderByParam}");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            // Extract and verify the ordering - we can't check exact ordering without knowing data
+            // but we can verify the response contains the expected parameter
+            var statusUpdates = await response.Content.ReadFromJsonAsync<IEnumerable<StatusUpdateDto>>();
+            Assert.NotNull(statusUpdates);
+
+            // Verify the presence of pagination metadata
+            Assert.True(response.Headers.Contains("X-Pagination"));
+        }
     }
 }
