@@ -32,22 +32,15 @@ jobs:
       
       # Create server secrets JSON file from GitHub secret
     - name: Setup server user secrets
-      run: |
-        echo '${{ secrets.SERVER_SECRETS_JSON }}' > server_secrets.json
-        dotnet user-secrets init --project TrackIt.Server
-        dotnet user-secrets set --project TrackIt.Server --json "$(cat server_secrets.json)"
-        rm server_secrets.json
+      run: bash .github/scripts/setup-server-secrets.sh
 
     - name: Test
       run: dotnet test --no-build --verbosity normal
       
       # Create test secrets JSON file from GitHub secret  
     - name: Setup test user secrets
-      run: |
-        echo '${{ secrets.TEST_SECRETS_JSON }}' > test_secrets.json
-        dotnet user-secrets init --project TrackIt.Api.IntegrationTests
-        dotnet user-secrets set --project TrackIt.Api.IntegrationTests --json "$(cat test_secrets.json)"
-        rm test_secrets.json
+      run: bash. .github/scripts/setup-test-secrets.sh
+        
 
   docker-build-and-push:
       needs: build-and-test

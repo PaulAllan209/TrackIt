@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
@@ -12,7 +11,6 @@ using TrackIt.Core.Models.Account;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.RequestFeatures;
-using TrackIt.Core.Services.Shipping;
 using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Attributes;
 using TrackIt.Server.Authorization;
