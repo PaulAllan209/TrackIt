@@ -59,6 +59,7 @@ namespace TrackIt.Server.Configuration
             CreateMap<IdentityRoleClaim<string>, PermissionDto>()
                 .ConvertUsing(s => ((PermissionDto)ApplicationPermissions.GetPermissionByValue(s.ClaimValue))!);
 
+            /************************** SHIPMENT **************************/
             CreateMap<ShipmentDto, Shipment>()
                 .ForMember(dest => dest.CurrentStatus, opt => opt.MapFrom(src => Enum.Parse<ShipmentStatus>(src.CurrentStatus)))
                 .ReverseMap();
@@ -84,6 +85,9 @@ namespace TrackIt.Server.Configuration
                 .ForMember(dest => dest.CreatedBy, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedBy, opt => opt.Ignore());
 
+            CreateMap<ShipmentForPatchDto, Shipment>()
+                .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+            CreateMap<Shipment, ShipmentForPatchDto>();
 
             /************************** STATUS UPDATE **************************/
             CreateMap<StatusUpdate, StatusUpdateDto>()
@@ -96,6 +100,14 @@ namespace TrackIt.Server.Configuration
 
             CreateMap<StatusUpdateForCreationDto, StatusUpdate>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<ShipmentStatus>(src.Status, true)));
+
+            CreateMap<StatusUpdate, StatusUpdateForPatchDto>()
+                .ForMember(dest => dest.ShipmentId, opt => opt.MapFrom(src => src.ShipmentId))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
+                .ReverseMap();
         }
     }
 }

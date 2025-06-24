@@ -30,6 +30,7 @@
         public const string CreateStatusPolicy = "Create Status";
         public const string UpdateStatusPolicy = "Update Status";
         public const string ViewStatusHistoryPolicy = "View Status History";
+        public const string DeleteStatusPolicy = "DeleteStatusPolicy";
 
         // Role-specific policies
         public const string SupplierOperationsPolicy = "Supplier Operations";

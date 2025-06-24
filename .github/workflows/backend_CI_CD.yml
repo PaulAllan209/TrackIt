@@ -18,8 +18,23 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      sql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          SA_PASSWORD: StrongP@ssw0rd2023
+          ACCEPT_EULA: Y
+        ports:
+          - 1433:1433
+
     steps:
     - uses: actions/checkout@v4
+  
+    - name: Wait for SQL Server to start
+      run: |
+        echo "Waiting 60 seconds for SQL Server to start..."
+        sleep 60
+
     - name: Setup .NET 9
       uses: actions/setup-dotnet@v4
       with:
@@ -30,8 +45,22 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
 
+    - name: Install jq
+      run: sudo apt-get update && sudo apt-get install -y jq
+
+    - name: Setup server secrets
+      run: bash .github/scripts/setup-server-secrets.sh
+      env:
+        SERVER_SECRETS_JSON: ${{ secrets.SERVER_SECRETS_JSON }}
+
+    - name: Setup test secrets
+      run: bash .github/scripts/setup-test-secrets.sh
+      env:
+        SERVER_SECRETS_JSON: ${{ secrets.TEST_SECRETS_JSON }}
+      
     - name: Test
       run: dotnet test --no-build --verbosity normal
+      
 
   docker-build-and-push:
       needs: build-and-test

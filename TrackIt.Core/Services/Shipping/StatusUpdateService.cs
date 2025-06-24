@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TrackIt.Core.Interfaces.Repositories;
 using TrackIt.Core.Interfaces.Repository;
 using TrackIt.Core.Models.Shipping;
+using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.RequestFeatures;
 using TrackIt.Core.Services.Shipping.Exceptions;
 using TrackIt.Core.Services.Shipping.Interfaces;
@@ -15,10 +16,12 @@ namespace TrackIt.Core.Services.Shipping
     public class StatusUpdateService : IStatusUpdateService
     {
         private readonly IStatusUpdateRepository _statusUpdateRepository;
+        private readonly IShipmentRepository _shipmentRepository;
 
-        public StatusUpdateService(IStatusUpdateRepository statusUpdateRepository)
+        public StatusUpdateService(IStatusUpdateRepository statusUpdateRepository, IShipmentRepository shipmentRepository)
         {
             _statusUpdateRepository = statusUpdateRepository;
+            _shipmentRepository = shipmentRepository;
         }
 
         public async Task<StatusUpdate> CreateStatusUpdateAsync(StatusUpdate statusUpdate)
@@ -26,7 +29,18 @@ namespace TrackIt.Core.Services.Shipping
             if (statusUpdate == null)
                 throw new ArgumentNullException(nameof(statusUpdate));
 
+            var shipmentEntity = await _shipmentRepository.GetShipmentByIdAsync(statusUpdate.ShipmentId.ToString(), trackChanges: true);
+
+            if (shipmentEntity == null)
+                throw new ShipmentNotFoundException();
+
+            if (statusUpdate.Status == ShipmentStatus.Delivered)
+                shipmentEntity.DeliveredAt = DateTime.UtcNow;
+
+            shipmentEntity.CurrentStatus = statusUpdate.Status;
             await _statusUpdateRepository.CreateStatusUpdateAsync(statusUpdate);
+
+            await _shipmentRepository.SaveAsync();
             await _statusUpdateRepository.SaveAsync();
 
             return statusUpdate;

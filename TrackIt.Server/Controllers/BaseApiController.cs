@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.Attributes;
 using TrackIt.Server.Services;
@@ -41,6 +42,22 @@ namespace TrackIt.Server.Controllers
         protected void AddModelError(string error, string key = "")
         {
             ModelState.AddModelError(key, error);
+        }
+
+        protected string GetHighestPrivilegeRole(string[] userRoles)
+        {
+            if (userRoles.Contains(UserType.Admin, StringComparer.OrdinalIgnoreCase))
+                return UserType.Admin;
+            if (userRoles.Contains(UserType.Supplier, StringComparer.OrdinalIgnoreCase))
+                return UserType.Supplier;
+            if (userRoles.Contains(UserType.Facility, StringComparer.OrdinalIgnoreCase))
+                return UserType.Facility;
+            if (userRoles.Contains(UserType.Delivery, StringComparer.OrdinalIgnoreCase))
+                return UserType.Delivery;
+            if (userRoles.Contains(UserType.Customer, StringComparer.OrdinalIgnoreCase))
+                return UserType.Customer;
+
+            return UserType.Customer; // Default to lowest privilege
         }
     }
 }

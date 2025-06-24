@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json;
@@ -11,9 +11,9 @@ using TrackIt.Core.Models.Account;
 using TrackIt.Core.Models.Shipping;
 using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.RequestFeatures;
-using TrackIt.Core.Services.Shipping;
 using TrackIt.Core.Services.Shipping.Interfaces;
 using TrackIt.Server.Attributes;
+using TrackIt.Server.Authorization;
 using TrackIt.Server.Dto.TrackIt;
 
 namespace TrackIt.Server.Controllers
@@ -39,6 +39,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpPost]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
+        [Authorize(Policy = AuthPolicies.CreateStatusPolicy)]
         public async Task<IActionResult> CreateStatusUpdate([FromBody] StatusUpdateForCreationDto statusUpdateForCreationDto)
         {
             if (!ModelState.IsValid)
@@ -50,6 +51,11 @@ namespace TrackIt.Server.Controllers
                     $"{ShipmentStatus.ToReceive.ToString()}, and " +
                     $"{ShipmentStatus.Completed.ToString()}");
 
+            var userId = GetCurrentUserId();
+            var userRoles = GetCurrentUserRoles();
+
+            string roleToUse = GetHighestPrivilegeRole(userRoles);
+
             var statusUpdateEntity = _mapper.Map<StatusUpdate>(statusUpdateForCreationDto);
 
             var statusUpdateEntityReturned = await _statusUpdateService.CreateStatusUpdateAsync(statusUpdateEntity);
@@ -60,7 +66,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.ViewStatusHistoryPolicy)]
         public async Task<IActionResult> GetAllStatusUpdates([FromQuery] StatusUpdateParameters statusUpdateParameters)
         {
             var userId = GetCurrentUserId();
@@ -80,7 +86,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("ByShipmentId/{shipmentId}")]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.ViewStatusHistoryPolicy)]
         public async Task<IActionResult> GetAllStatusUpdatesByShipmentId(string shipmentId)
         {
             if (string.IsNullOrEmpty(shipmentId))
@@ -98,7 +104,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpGet("{statusUpdateId}")]
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.ViewStatusHistoryPolicy)]
         public async Task<IActionResult> GetStatusUpdateById(string statusUpdateId)
         {
             if (string.IsNullOrEmpty(statusUpdateId))
@@ -121,11 +127,9 @@ namespace TrackIt.Server.Controllers
             return Ok(statusUpdateDto);
         }
 
-        // TODO: Get latest status update of shipment
-
         [HttpPatch("{statusUpdateId}")]
-        [Authorize]
-        public async Task<IActionResult> PatchStatusUpdate(string statusUpdateId, [FromBody] JsonPatchDocument<StatusUpdateDto> patchDoc)
+        [Authorize(Policy = AuthPolicies.UpdateStatusPolicy)]
+        public async Task<IActionResult> PatchStatusUpdate(string statusUpdateId, [FromBody] JsonPatchDocument<StatusUpdateForPatchDto> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest("Patch document cannot be null.");
@@ -146,7 +150,7 @@ namespace TrackIt.Server.Controllers
                 return NotFound($"StatusUpdate with Id {statusUpdateId} could not be found.");
 
             // Map entity to DTO
-            var statusUpdateToUpdateDto = _mapper.Map<StatusUpdateDto>(statusUpdateToUpdateEntity);
+            var statusUpdateToUpdateDto = _mapper.Map<StatusUpdateForPatchDto>(statusUpdateToUpdateEntity);
 
             // apply patch to DTO
             patchDoc.ApplyTo(statusUpdateToUpdateDto, error =>
@@ -174,7 +178,7 @@ namespace TrackIt.Server.Controllers
         }
 
         [HttpDelete("{statusUpdateId}")]
-        [Authorize]
+        [Authorize(Roles = UserType.Admin)]
         public async Task<IActionResult> DeleteStatusUpdateById(string statusUpdateId)
         {
             if (string.IsNullOrEmpty(statusUpdateId))

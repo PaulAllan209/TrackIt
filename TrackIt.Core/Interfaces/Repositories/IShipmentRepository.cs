@@ -13,7 +13,7 @@ namespace TrackIt.Core.Interfaces.Repository
     {
         Task CreateShipmentAsync(Shipment shipment);
         Task<PagedList<Shipment>> GetAllShipmentsAsync(string userType, ShipmentParameters shipmentParameters, bool trackChanges, string? userId = null);
-        Task<Shipment?> GetShipmentByIdAsync(string userType, string shipmentId, bool trackChanges, string? userId = null);
+        Task<Shipment?> GetShipmentByIdAsync(string shipmentId, bool trackChanges);
         void DeleteShipment(Shipment shipment);
         Task SaveAsync();
     }

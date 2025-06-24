@@ -1,14 +1,9 @@
-﻿// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using TrackIt.Core.Models.Account;
+using TrackIt.Core.Models.Shipping.Enums;
 using TrackIt.Core.Services.Account;
 using TrackIt.Server.Authorization;
 using TrackIt.Server.Dto.Account;
@@ -223,6 +218,41 @@ namespace TrackIt.Server.Controllers
 
             if (user.Roles == null)
                 AddModelError($"{nameof(user.Roles)} is required when registering a new user.", nameof(user.Roles));
+
+            if (ModelState.IsValid)
+            {
+                var appUser = _mapper.Map<ApplicationUser>(user);
+                var result = await _userAccountService.CreateUserAsync(appUser, user.Roles!, user.Password!);
+
+                if (result.Succeeded)
+                {
+                    var userVM = await GetUserViewModelHelper(appUser.Id);
+                    return CreatedAtAction(nameof(GetUserById), new { id = userVM?.Id }, userVM);
+                }
+
+                AddModelError(result.Errors);
+            }
+
+            return BadRequest(ModelState);
+        }
+
+        // Endpoint for registering users
+        [HttpPost("users/RegisterPublic")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterPublic([FromBody] UserRegisterDto user)
+        {
+            if (string.IsNullOrWhiteSpace(user.Password))
+                AddModelError($"{nameof(user.Password)} is required when registering a new user.",
+                    nameof(user.Password));
+
+            if (user.Roles == null)
+                AddModelError($"{nameof(user.Roles)} is required when registering a new user.", nameof(user.Roles));
+
+            if (user.Roles != null)
+            {
+                if (user.Roles.Contains(UserType.Admin, StringComparer.OrdinalIgnoreCase))
+                    AddModelError("Registering as administrator is forbidden.");
+            }
 
             if (ModelState.IsValid)
             {

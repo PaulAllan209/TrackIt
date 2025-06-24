@@ -62,4 +62,8 @@
     <ProjectReference Include="..\TrackIt.Core\TrackIt.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="TrackIt.Api.IntegrationTests"/>
+  </ItemGroup>
+
 </Project>

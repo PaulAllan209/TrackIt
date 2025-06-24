@@ -12,8 +12,8 @@ namespace TrackIt.Core.Services.Shipping.Interfaces
     {
         Task<Shipment> CreateShipmentAsync(Shipment shipment);
         Task<(PagedList<Shipment> shipments, MetaData metaData)> GetAllShipmentAsync(string userType, ShipmentParameters shipmentParameters, bool trackChanges, string? userId = null);
-        Task<Shipment> GetShipmentByIdAsync(string userType, string shipmentId, bool trackChanges, string? userId = null);
+        Task<Shipment> GetShipmentByIdAsync(string shipmentId, bool trackChanges);
         Task UpdateShipmentAsync();
-        Task DeleteShipmentAsync(string userType, string shipmentId, bool trackChanges, string? userId = null);
+        Task DeleteShipmentAsync(string shipmentId, bool trackChanges);
     }
 }

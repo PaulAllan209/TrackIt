@@ -210,6 +210,7 @@ namespace TrackIt.Server.Extensions
                     policy => policy.RequireClaim(CustomClaims.Permission,
                     [
                         ApplicationPermissions.ViewShipment,
+                        ApplicationPermissions.CreateStatus,
                         ApplicationPermissions.UpdateStatus,
                         ApplicationPermissions.ViewStatusHistory
                     ]))
@@ -217,6 +218,7 @@ namespace TrackIt.Server.Extensions
                     policy => policy.RequireClaim(CustomClaims.Permission,
                     [
                         ApplicationPermissions.ViewShipment,
+                        ApplicationPermissions.CreateStatus,
                         ApplicationPermissions.UpdateStatus,
                         ApplicationPermissions.ViewStatusHistory
                     ]))
@@ -224,13 +226,11 @@ namespace TrackIt.Server.Extensions
                     policy => policy.RequireClaim(CustomClaims.Permission,
                     [
                         ApplicationPermissions.ViewShipment,
+                        ApplicationPermissions.CreateStatus,
                         ApplicationPermissions.ViewStatusHistory,
                         ApplicationPermissions.SetStatusDelivered
                     ]))
                 ;
-                
-
-
         }
 
         public static void ConfigureRepositories(this IServiceCollection services)
