@@ -100,6 +100,14 @@ namespace TrackIt.Server.Configuration
 
             CreateMap<StatusUpdateForCreationDto, StatusUpdate>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => Enum.Parse<ShipmentStatus>(src.Status, true)));
+
+            CreateMap<StatusUpdate, StatusUpdateForPatchDto>()
+                .ForMember(dest => dest.ShipmentId, opt => opt.MapFrom(src => src.ShipmentId))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.Notes, opt => opt.MapFrom(src => src.Notes))
+                .ForMember(dest => dest.Location, opt => opt.MapFrom(src => src.Location))
+                .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImageUrl))
+                .ReverseMap();
         }
     }
 }

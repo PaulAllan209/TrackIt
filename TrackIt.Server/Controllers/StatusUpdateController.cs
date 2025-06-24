@@ -131,7 +131,7 @@ namespace TrackIt.Server.Controllers
 
         [HttpPatch("{statusUpdateId}")]
         [Authorize(Policy = AuthPolicies.UpdateStatusPolicy)]
-        public async Task<IActionResult> PatchStatusUpdate(string statusUpdateId, [FromBody] JsonPatchDocument<StatusUpdateDto> patchDoc)
+        public async Task<IActionResult> PatchStatusUpdate(string statusUpdateId, [FromBody] JsonPatchDocument<StatusUpdateForPatchDto> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest("Patch document cannot be null.");
@@ -152,7 +152,7 @@ namespace TrackIt.Server.Controllers
                 return NotFound($"StatusUpdate with Id {statusUpdateId} could not be found.");
 
             // Map entity to DTO
-            var statusUpdateToUpdateDto = _mapper.Map<StatusUpdateDto>(statusUpdateToUpdateEntity);
+            var statusUpdateToUpdateDto = _mapper.Map<StatusUpdateForPatchDto>(statusUpdateToUpdateEntity);
 
             // apply patch to DTO
             patchDoc.ApplyTo(statusUpdateToUpdateDto, error =>

@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -20,6 +22,12 @@ namespace TrackIt.Api.IntegrationTests
 {
     internal class TrackItWebApplicationFactory : WebApplicationFactory<Program>
     {
+        private readonly string _dbNameSuffix;
+
+        public TrackItWebApplicationFactory(string dbNameSuffix)
+        {
+            _dbNameSuffix = dbNameSuffix;
+        }
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureAppConfiguration((context, config) =>
@@ -32,6 +40,8 @@ namespace TrackIt.Api.IntegrationTests
                 services.RemoveAll(typeof(DbContextOptions<ApplicationDbContext>));
 
                 var connString = GetConnectionString();
+                // Add unique suffix to database name
+                connString = ModifyConnectionStringWithUniqueName(connString);
 
                 var migrationsAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
 
@@ -66,6 +76,19 @@ namespace TrackIt.Api.IntegrationTests
 
             var connString = configuration.GetConnectionString("TrackIt");
             return connString;
+        }
+
+        private string ModifyConnectionStringWithUniqueName(string connectionString)
+        {
+            if (string.IsNullOrEmpty(connectionString))
+                return connectionString;
+
+            var builder = new SqlConnectionStringBuilder(connectionString)
+            {
+                InitialCatalog = $"TrackItDB_test_{_dbNameSuffix}"
+            };
+
+            return builder.ConnectionString;
         }
 
         private static ApplicationDbContext CreateDbContext(IServiceCollection services)
