@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		.github\workflows\backend_CI_CD.yml = .github\workflows\backend_CI_CD.yml
 		docker-compose.yaml = docker-compose.yaml
+		docker-entrypoint.sh = docker-entrypoint.sh
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrackItTests", "TrackItTests\TrackItTests.csproj", "{E6BB6B70-C1F3-4C12-B455-81DCDD4B5B76}"

@@ -1,10 +1,4 @@
-﻿// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using TrackIt.Core.Services.Account;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 

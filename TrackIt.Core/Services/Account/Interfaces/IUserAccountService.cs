@@ -1,10 +1,4 @@
-﻿// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
-using TrackIt.Core.Models.Account;
+﻿using TrackIt.Core.Models.Account;
 
 namespace TrackIt.Core.Services.Account
 {
