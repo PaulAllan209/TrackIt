@@ -1,9 +1,3 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 import { Component, OnInit, inject, output, viewChild } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';

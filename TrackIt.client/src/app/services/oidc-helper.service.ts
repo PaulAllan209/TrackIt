@@ -1,9 +1,3 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
@@ -20,7 +14,7 @@ export class OidcHelperService {
   private localStorage = inject(LocalStoreManager);
   private configurations = inject(ConfigurationService);
 
-  private readonly clientId = 'quickapp_spa';
+  private readonly clientId = 'salad_spa';
   private readonly scope = 'openid email phone profile offline_access roles';
 
   private get tokenEndpoint() { return `${this.configurations.baseUrl}/connect/token`; }

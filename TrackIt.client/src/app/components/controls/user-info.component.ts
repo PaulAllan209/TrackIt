@@ -1,9 +1,3 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 import { Component, OnInit, Input, inject, input, output, viewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgModel, NgForm, FormsModule } from '@angular/forms';

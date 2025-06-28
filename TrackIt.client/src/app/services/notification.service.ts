@@ -1,9 +1,3 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 import { Injectable, inject } from '@angular/core';
 import { Observable, interval } from 'rxjs';
 import { map, mergeMap, startWith } from 'rxjs/operators';

@@ -5,11 +5,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Version>9.19.0</Version>
-    <Company>www.ebenmonney.com</Company>
-    <Authors>$(Company)</Authors>
-    <Description>Data Access Layer for the Quick Application template</Description>
-    <Copyright>Copyright © 2024 www.ebenmonney.com</Copyright>
-    <PackageProjectUrl>https://www.ebenmonney.com/quickapp</PackageProjectUrl>
     <UserSecretsId>d472073e-a962-464e-a1b2-ac5ff2c8212c</UserSecretsId>
   </PropertyGroup>
 
