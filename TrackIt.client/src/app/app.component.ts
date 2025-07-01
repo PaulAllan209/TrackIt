@@ -7,7 +7,6 @@ import { NgbCollapseModule, NgbModal, NgbPopover } from '@ng-bootstrap/ng-bootst
 
 import { AlertService, AlertDialog, DialogType, AlertCommand, MessageSeverity } from './services/alert.service';
 import { NotificationService } from './services/notification.service';
-import { AppTranslationService } from './services/app-translation.service';
 import { AccountService } from './services/account.service';
 import { LocalStoreManager } from './services/local-store-manager.service';
 import { AppTitleService } from './services/app-title.service';
@@ -37,7 +36,6 @@ export class AppComponent implements OnInit, OnDestroy {
   private modalService = inject(NgbModal);
   private notificationService = inject(NotificationService);
   private authService = inject(AuthService);
-  private translationService = inject(AppTranslationService);
   configurations = inject(ConfigurationService);
   router = inject(Router);
   renderer = inject(Renderer2);
@@ -56,14 +54,12 @@ export class AppComponent implements OnInit, OnDestroy {
 
   loginControl: LoginComponent | undefined;
 
-  gT = (key: string | string[], interpolateParams?: object) =>
-    this.translationService.getTranslation(key, interpolateParams);
 
   get notificationsTitle() {
     if (this.newNotificationCount) {
-      return `${this.gT('app.Notifications')} (${this.newNotificationCount} ${this.gT('app.New')})`;
+      return `Notifications ${this.newNotificationCount} New`;
     } else {
-      return this.gT('app.Notifications');
+      return 'Notifications';
     }
   }
 
@@ -90,16 +86,9 @@ export class AppComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       if (this.isUserLoggedIn) {
         this.alertService.resetStickyMessage();
-        this.alertService.showMessage(this.gT('app.alerts.Login'), this.gT('app.alerts.WelcomeBack',
-          { username: this.userName }), MessageSeverity.default);
+        this.alertService.showMessage('Login', `Welcome Back ${this.userName}`, MessageSeverity.default);
       }
     }, 2000);
-
-    this.languageChangedSubscription = this.translationService.languageChanged$
-      .subscribe(event => {
-        this.renderer.setAttribute(document.documentElement, 'dir', event.lang === 'ar' ? 'rtl' : 'ltr');
-        this.renderer.setAttribute(document.documentElement, 'lang', event.lang);
-      });
 
     this.alertService.getDialogEvent().subscribe(alert => this.showDialog(alert));
     this.alertService.getMessageEvent().subscribe(message => this.showToast(message));
@@ -117,7 +106,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       setTimeout(() => {
         if (!this.isUserLoggedIn) {
-          this.alertService.showMessage(this.gT('app.alerts.SessionEnded'), '', MessageSeverity.default);
+          this.alertService.showMessage('SessionEnded', '', MessageSeverity.default);
         }
       }, 500);
     });
@@ -145,8 +134,8 @@ export class AppComponent implements OnInit, OnDestroy {
           if (this.dataLoadingConsecutiveFailures++ < 20) {
             setTimeout(() => this.initNotificationsLoading(), 5000);
           } else {
-            this.alertService.showStickyMessage(this.gT('app.alerts.LoadingError'),
-              this.gT('app.alerts.LoadingNewNotificationsFailed'), MessageSeverity.error);
+            this.alertService.showStickyMessage('LoadingError',
+              'LoadingNewNotificationsFailed', MessageSeverity.error);
           }
         }
       });
@@ -167,8 +156,8 @@ export class AppComponent implements OnInit, OnDestroy {
           },
           error: error => {
             this.alertService.logError(error);
-            this.alertService.showMessage(this.gT('app.alerts.NotificationError'),
-              this.gT('app.alerts.MarkingReadNotificationsFailed'), MessageSeverity.error);
+            this.alertService.showMessage('NotificationError',
+              'MarkingReadNotificationsFailed', MessageSeverity.error);
           }
         });
     }
@@ -188,8 +177,8 @@ export class AppComponent implements OnInit, OnDestroy {
     this.loginControl.modalClosedCallback = () => modalRef.close();
 
     modalRef.shown.subscribe(() => {
-      this.alertService.showStickyMessage(this.gT('app.alerts.SessionExpired'),
-        this.gT('app.alerts.SessionExpiredLoginAgain'), MessageSeverity.info);
+      this.alertService.showStickyMessage('SessionExpired',
+        'SessionExpiredLoginAgain', MessageSeverity.info);
     });
 
     modalRef.hidden.subscribe(() => {
@@ -197,8 +186,8 @@ export class AppComponent implements OnInit, OnDestroy {
       this.loginControl?.reset();
 
       if (this.authService.isSessionExpired) {
-        this.alertService.showStickyMessage(this.gT('app.alerts.SessionExpired'),
-          this.gT('app.alerts.SessionExpiredLoginToRenewSession'), MessageSeverity.warn);
+        this.alertService.showStickyMessage('SessionExpired',
+          'SessionExpiredLoginToRenewSession', MessageSeverity.warn);
       }
     });
   }
@@ -206,8 +195,8 @@ export class AppComponent implements OnInit, OnDestroy {
   showDialog(dialog: AlertDialog) {
     alertify.set({
       labels: {
-        ok: dialog.okLabel || this.gT('app.alerts.OK'),
-        cancel: dialog.cancelLabel || this.gT('app.alerts.Cancel')
+        ok: dialog.okLabel || 'OK',
+        cancel: dialog.cancelLabel || 'Cancel'
       }
     });
 
