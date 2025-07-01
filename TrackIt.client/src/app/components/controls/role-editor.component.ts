@@ -2,7 +2,6 @@ import { Component, OnInit, inject, output, viewChild } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgForm, FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 import { AlertService, MessageSeverity } from '../../services/alert.service';
@@ -15,7 +14,7 @@ import { GroupByPipe } from '../../pipes/group-by.pipe';
   selector: 'app-role-editor',
   templateUrl: './role-editor.component.html',
   styleUrl: './role-editor.component.scss',
-  imports: [FormsModule, NgClass, NgbTooltip, TranslateModule, GroupByPipe]
+  imports: [FormsModule, NgClass, NgbTooltip, GroupByPipe]
 })
 export class RoleEditorComponent implements OnInit {
   private alertService = inject(AlertService);

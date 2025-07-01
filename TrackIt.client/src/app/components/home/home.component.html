@@ -1,20 +1,20 @@
 <header class="pageHeader">
   <h3>
-    <i class="fa fa-tachometer fa-lg page-caption" aria-hidden="true"></i> {{'pageHeader.Dashboard' | translate}}
+    <i class="fa fa-tachometer fa-lg page-caption" aria-hidden="true"></i> Dashboard
   </h3>
 </header>
-<div [@fadeInOut]>
+<div>
   <div #widgetsContainer cdkDropList (cdkDropListDropped)="drop($event)" class="row">
     @if (!configurations.showDashboardStatistics && !configurations.showDashboardNotifications &&
          !configurations.showDashboardTodo && !configurations.showDashboardBanner) {
       <div class="col-12 my-5">
         <div class="card card-body bg-light">
           <h4 class="text-muted text-center text-link">
-            {{'home.NoWidgets1' | translate}}
+            You have no widgets displayed. Goto
             <a routerLink="/settings" fragment="preferences">
-              <i class="fa fa-sliders"></i> {{'settings.tab.Preferences' | translate}}
+              <i class="fa fa-sliders"></i> Preferences
             </a>
-            {{'home.NoWidgets2' | translate}}
+            to configure available widgets
           </h4>
         </div>
       </div>
@@ -26,7 +26,7 @@
         <button type="button" class="btn-close" aria-label="Close" title="Close"
                 (click)="configurations.showDashboardStatistics = false"></button>
         <div class="card card-body bg-light">
-          <h5 class="text-muted d-inline-block">{{'home.StatisticsTitle' | translate}}</h5>
+          <h5 class="text-muted d-inline-block">Some Important Stuff</h5>
           <div #dragPlaceholder *cdkDragPlaceholder class="widget-container-placeholder mb-4"
                [style.minHeight.px]="getPlaceholderMinHeight(dragPlaceholder, dashboardStatistics)"></div>
           <app-statistics-demo></app-statistics-demo>

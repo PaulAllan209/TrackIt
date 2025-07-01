@@ -1,10 +1,8 @@
 import { Component, OnInit, TemplateRef, inject, viewChild } from '@angular/core';
-import { TranslateModule } from '@ngx-translate/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TableColumn, NgxDatatableModule } from '@siemens/ngx-datatable';
 
 import { AlertService, DialogType, MessageSeverity } from '../../services/alert.service';
-import { AppTranslationService } from '../../services/app-translation.service';
 import { AccountService } from '../../services/account.service';
 import { Utilities } from '../../services/utilities';
 import { Role } from '../../models/role.model';
@@ -20,11 +18,10 @@ interface RoleIndex extends Role {
   selector: 'app-roles-management',
   templateUrl: './roles-management.component.html',
   styleUrl: './roles-management.component.scss',
-  imports: [SearchBoxComponent, NgxDatatableModule, RoleEditorComponent, TranslateModule]
+  imports: [SearchBoxComponent, NgxDatatableModule, RoleEditorComponent]
 })
 export class RolesManagementComponent implements OnInit {
   private alertService = inject(AlertService);
-  private translationService = inject(AppTranslationService);
   private accountService = inject(AccountService);
   private modalService = inject(NgbModal);
 
@@ -46,13 +43,11 @@ export class RolesManagementComponent implements OnInit {
   roleEditor: RoleEditorComponent | null = null;
 
   ngOnInit() {
-    const gT = (key: string) => this.translationService.getTranslation(key);
-
     this.columns = [
       { prop: 'index', name: '#', width: 50, cellTemplate: this.indexTemplate(), canAutoResize: false },
-      { prop: 'name', name: gT('roles.management.Name'), width: 180 },
-      { prop: 'description', name: gT('roles.management.Description'), width: 320 },
-      { prop: 'usersCount', name: gT('roles.management.Users'), width: 50 },
+      { prop: 'name', name: 'Name', width: 180 },
+      { prop: 'description', name: 'Description', width: 320 },
+      { prop: 'usersCount', name: 'Users', width: 50 },
       { name: '', width: 160, cellTemplate: this.actionsTemplate(), resizeable: false, canAutoResize: false, sortable: false, draggable: false }
     ];
 

@@ -39,10 +39,10 @@
 
 
   <ng-template #actionsTemplate let-row="row">
-    <a class="btn btn-link btn-sm" href="javascript:;" ngbTooltip="{{'notifications.Delete' | translate}}" container="body" (click)="deleteNotification(row)">
+    <a class="btn btn-link btn-sm" href="javascript:;" ngbTooltip="Delete" container="body" (click)="deleteNotification(row)">
       <i class="fa fa-times"></i>
     </a>
-    <a class="btn btn-link btn-sm" href="javascript:;" ngbTooltip="{{'notifications.Pin' | translate}}" container="body" (click)="togglePin(row)">
+    <a class="btn btn-link btn-sm" href="javascript:;" ngbTooltip="Pin" container="body" (click)="togglePin(row)">
       <i [ngClass]="row.isPinned ? 'fa fa-thumb-tack' : 'fa fa-thumb-tack fa-rotate-90'"></i>
     </a>
   </ng-template>

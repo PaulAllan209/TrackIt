@@ -4,7 +4,7 @@
           (ngSubmit)="f.form.valid ? save() : showValidationAlerts()">
       <div class="row">
         <label [class.col-lg-3]="isViewOnly()" [class.col-lg-2]="!isViewOnly()" class="col-form-label" for="jobTitle-{{uniqueId}}">
-          {{'users.editor.JobTitle' | translate}}
+          Job Title:
         </label>
         @if (isEditMode) {
           <div [class.col-lg-9]="isViewOnly()" [class.col-lg-10]="!isViewOnly()">
@@ -25,7 +25,7 @@
       </div>
       <div class="row">
         <label [class.col-lg-3]="isViewOnly()" [class.col-lg-2]="!isViewOnly()" class="col-form-label" for="userName-{{uniqueId}}">
-          {{'users.editor.UserName' | translate}}
+          User Name: 
         </label>
         @if (isEditMode) {
           <div [class.col-lg-9]="isViewOnly()" [class.col-lg-10]="!isViewOnly()">
@@ -34,9 +34,9 @@
                    [ngClass]="{'is-valid': f.submitted && userName.valid, 'is-invalid' : f.submitted && !userName.valid}"
                    [(ngModel)]="userEdit.userName" #userName="ngModel" required minlength="2" maxlength="200" />
             @if (showValidationErrors && f.submitted && !userName.valid) {
-              <span class="invalid-feedback">
-                {{'users.editor.UserNameRequired' | translate}}
-              </span>
+            <span class="invalid-feedback">
+              User name is required (minimum of 2 and maximum of 200 characters)
+            </span>
             }
           </div>
         }
@@ -55,18 +55,18 @@
 
         <div class="row">
           <label class="col-form-label col-lg-2" for="userPassword-{{uniqueId}}">
-            {{'users.editor.Password' | translate}}
+            Password:
           </label>
           <div class="col-lg-10">
             <input type="password" attr.id="userPassword-{{uniqueId}}" name="userPassword" class="form-control"
                    [attr.autocomplete]="isGeneralEditor ? 'new-password' : null" placeholder="Enter password"
                    [ngClass]="{'is-valid': f.submitted && userPassword.valid, 'is-invalid' : f.submitted && !userPassword.valid}"
                    [(ngModel)]="userEdit.currentPassword" #userPassword="ngModel" required />
-            <small class="hint-sm">{{'users.editor.PasswordHint' | translate}}</small>
+            <small class="hint-sm">Your password is required when changing username or email</small>
             @if (showValidationErrors && f.submitted && !userPassword.valid) {
-              <span class="invalid-feedback">
-                {{'users.editor.CurrentPasswordRequired' | translate}}
-              </span>
+            <span class="invalid-feedback">
+              Current password is required
+            </span>
             }
           </div>
         </div>
@@ -78,7 +78,7 @@
       </div>
       <div class="row">
         <label [class.col-lg-3]="isViewOnly()" [class.col-lg-2]="!isViewOnly()" class="col-form-label" for="email-{{uniqueId}}">
-          {{'users.editor.Email' | translate}}
+          Email:
         </label>
         @if (isEditMode) {
           <div [class.col-lg-9]="isViewOnly()" [class.col-lg-10]="!isViewOnly()">
@@ -87,14 +87,14 @@
                    class="form-control" [(ngModel)]="userEdit.email" #email="ngModel" required maxlength="200"
                    pattern="^[a-zA-Z0-9_.+\-]+@[a-zA-Z0-9\-]+\.[a-zA-Z0-9\-.]+$" />
             @if (showValidationErrors && f.submitted && email.errors?.['required']) {
-              <span class="invalid-feedback">
-                {{'users.editor.EmailRequired' | translate}}
-              </span>
+            <span class="invalid-feedback">
+              Email address is required (maximum of 200 characters)
+            </span>
             }
             @else if (showValidationErrors && f.submitted && email.errors?.['pattern']) {
-              <span class="invalid-feedback">
-                {{'users.editor.InvalidEmail' | translate}}
-              </span>
+            <span class="invalid-feedback">
+              Specified email is not valid
+            </span>
             }
           </div>
         }
@@ -113,12 +113,12 @@
 
         <div class="row">
           <label for="newPassword-{{uniqueId}}" class="col-form-label col-lg-2">
-            {{'users.editor.Password' | translate}}
+            Password:
           </label>
           @if (!isChangePassword && !isNewUser) {
             <div class="col-lg-10">
               <button type="button" (click)="changePassword()" class="btn btn-link text-link">
-                {{'users.editor.ChangePassword' | translate}}
+                Change Password
               </button>
             </div>
           }
@@ -128,7 +128,7 @@
                 @if (isEditingSelf) {
                   <div class="row">
                     <label class="col-form-label col-lg-3" for="currentPassword-{{uniqueId}}">
-                      {{'users.editor.CurrentPassword' | translate}}
+                      Current Password:
                     </label>
                     <div class="col-lg-9">
                       <input type="password" attr.id="currentPassword-{{uniqueId}}" name="currentPassword"
@@ -137,9 +137,9 @@
                              [ngClass]="{'is-valid': f.submitted && currentPassword.valid, 'is-invalid' : f.submitted && !currentPassword.valid}"
                              [(ngModel)]="userEdit.currentPassword" #currentPassword="ngModel" required />
                       @if (showValidationErrors && f.submitted && !currentPassword.valid) {
-                        <span class="invalid-feedback">
-                          {{'users.editor.CurrentPasswordRequired' | translate}}
-                        </span>
+                      <span class="invalid-feedback">
+                        Current password is required
+                      </span>
                       }
                     </div>
                   </div>
@@ -153,7 +153,7 @@
                 }
                 <div class="row">
                   <label class="col-form-label col-lg-3" for="newPassword-{{uniqueId}}">
-                    {{'users.editor.NewPassword' | translate}}
+                    New Password:
                   </label>
                   <div class="col-lg-9">
                     <input type="password" attr.id="newPassword-{{uniqueId}}" name="newPassword"
@@ -163,9 +163,9 @@
                            [(ngModel)]="userEdit.newPassword" #newPassword="ngModel"
                            required minlength="6" appValidateEqual="confirmPassword" reverse="true" />
                     @if (showValidationErrors && f.submitted && !newPassword.valid) {
-                      <span class="invalid-feedback">
-                        {{'users.editor.NewPasswordRequired' | translate}}
-                      </span>
+                    <span class="invalid-feedback">
+                      New password is required (minimum of 6 characters)
+                    </span>
                     }
                   </div>
                 </div>
@@ -176,7 +176,7 @@
                 </div>
                 <div class="row">
                   <label class="col-form-label col-lg-3" for="confirmPassword-{{uniqueId}}">
-                    {{'users.editor.ConfirmPassword' | translate}}
+                    Confirm Password:
                   </label>
                   <div class="col-lg-9">
                     <input type="password" attr.id="confirmPassword-{{uniqueId}}" name="confirmPassword"
@@ -186,14 +186,14 @@
                            [(ngModel)]="userEdit.confirmPassword" #confirmPassword="ngModel"
                            required appValidateEqual="newPassword" />
                     @if (showValidationErrors && f.submitted && confirmPassword.errors?.['required']) {
-                      <span class="invalid-feedback">
-                        {{'users.editor.ConfirmationPasswordRequired' | translate}}
-                      </span>
+                    <span class="invalid-feedback">
+                      Confirmation password is required
+                    </span>
                     }
                     @else if (showValidationErrors && f.submitted && confirmPassword.errors?.['validateEqual']) {
-                      <span class="invalid-feedback">
-                        {{'users.editor.PasswordMismatch' | translate}}
-                      </span>
+                    <span class="invalid-feedback">
+                      New password and confirmation password do not match
+                    </span>
                     }
                   </div>
                 </div>
@@ -212,7 +212,7 @@
 
         <div class="row">
           <label [class.col-lg-3]="isViewOnly()" [class.col-lg-2]="!isViewOnly()" class="col-form-label" for="roles-user-info">
-            {{'users.editor.Roles' | translate}}
+            Roles:
           </label>
           @if (!isEditMode) {
             <div [class.col-lg-9]="isViewOnly()" [class.col-lg-10]="!isViewOnly()">
@@ -242,9 +242,9 @@
                 </ng-template>
               </ng-select>
               @if (showValidationErrors && f.submitted && !roles.valid) {
-                <span class="invalid-feedback">
-                  {{'users.editor.RoleRequired' | translate}}
-                </span>
+              <span class="invalid-feedback">
+                Role is required
+              </span>
               }
             </div>
           }
@@ -258,7 +258,7 @@
       </div>
       <div class="row">
         <label [class.col-lg-3]="isViewOnly()" [class.col-lg-2]="!isViewOnly()" class="col-form-label" for="fullName-{{uniqueId}}">
-          {{'users.editor.FullName' | translate}}
+          Full Name:
         </label>
         @if (isEditMode) {
           <div [class.col-lg-9]="isViewOnly()" [class.col-lg-10]="!isViewOnly()">
@@ -279,7 +279,7 @@
       </div>
       <div class="row">
         <label [class.col-lg-3]="isViewOnly()" [class.col-lg-2]="!isViewOnly()" class="col-form-label" for="phoneNumber-{{uniqueId}}">
-          {{'users.editor.PhoneNumber' | translate}}
+          Phone #:
         </label>
         @if (isEditMode) {
           <div [class.col-lg-9]="isViewOnly()" [class.col-lg-10]="!isViewOnly()">
@@ -306,12 +306,12 @@
               <div class="float-start">
                 <div class="form-check user-enabled">
                   <input class="form-check-input" type="checkbox" id="idEnabled" name="isEnabled" [(ngModel)]="userEdit.isEnabled">
-                  <label for="idEnabled" class="form-check-label">{{'users.editor.Enabled' | translate}}</label>
+                  <label for="idEnabled" class="form-check-label">Enabled</label>
                 </div>
                 @if (userEdit.isLockedOut) {
-                  <button type="button" (click)="unlockUser()" class="btn btn-warning unblock-user" [disabled]="isSaving">
-                    <i class='fa fa-unlock-alt'></i> {{'users.editor.Unblock' | translate}}
-                  </button>
+                <button type="button" (click)="unlockUser()" class="btn btn-warning unblock-user" [disabled]="isSaving">
+                  <i class='fa fa-unlock-alt'></i> Unblock
+                </button>
                 }
               </div>
             }
@@ -320,24 +320,24 @@
             <div ngPreserveWhitespaces class="float-end">
               @if (!isEditMode && isGeneralEditor) {
                 <button type="button" (click)="close()" class="btn btn-outline-secondary">
-                  <i class='fa fa-close'></i> {{'users.editor.Close' | translate}}
+                  <i class='fa fa-close'></i> Close
                 </button>
               }
               @if (!isEditMode && !isGeneralEditor) {
                 <button type="button" (click)="edit()" class="btn btn-outline-secondary">
-                  <i class='fa fa-edit'></i> {{'users.editor.Edit' | translate}}
+                  <i class='fa fa-edit'></i> Edit
                 </button>
               }
               @if (isEditMode) {
                 <button type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving">
-                  <i class='fa fa-times'></i> {{'users.editor.Cancel' | translate}}
+                  <i class='fa fa-times'></i> Cancel
                 </button>
 
                 <button type="submit" class="btn btn-primary" [disabled]="isSaving">
                   @if (isSaving) {
-                    <i class='fa fa-circle-o-notch fa-spin'></i> {{'users.editor.Saving' | translate}}
+                    <i class='fa fa-circle-o-notch fa-spin'></i> Saving...
                   }@else {
-                    <i class='fa fa-save'></i> {{'users.editor.Save' | translate}}
+                    <i class='fa fa-save'></i> Save
                   }
                 </button>
               }

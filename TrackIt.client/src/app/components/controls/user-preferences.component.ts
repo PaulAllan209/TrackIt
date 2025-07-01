@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
 
 import { AlertService, DialogType, MessageSeverity } from '../../services/alert.service';
@@ -14,7 +13,7 @@ import { Permissions } from '../../models/permission.model';
     selector: 'app-user-preferences',
     templateUrl: './user-preferences.component.html',
     styleUrl: './user-preferences.component.scss',
-    imports: [NgSelectComponent, FormsModule, NgOptionComponent, TranslateModule]
+    imports: [NgSelectComponent, FormsModule, NgOptionComponent]
 })
 export class UserPreferencesComponent {
   private alertService = inject(AlertService);

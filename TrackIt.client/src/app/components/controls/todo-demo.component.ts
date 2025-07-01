@@ -1,13 +1,11 @@
 import { Component, OnInit, OnDestroy, TemplateRef, inject, input, viewChild } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { TableColumn, NgxDatatableModule } from '@siemens/ngx-datatable';
 
 import { AuthService } from '../../services/auth.service';
 import { AlertService, MessageSeverity, DialogType } from '../../services/alert.service';
-import { AppTranslationService } from '../../services/app-translation.service';
 import { LocalStoreManager } from '../../services/local-store-manager.service';
 import { Utilities } from '../../services/utilities';
 import { SearchBoxComponent } from './search-box.component';
@@ -25,11 +23,10 @@ interface Todo {
   selector: 'app-todo-demo',
   templateUrl: './todo-demo.component.html',
   styleUrl: './todo-demo.component.scss',
-  imports: [SearchBoxComponent, NgxDatatableModule, FormsModule, AutofocusDirective, NgbTooltip, NgClass, TranslateModule]
+  imports: [SearchBoxComponent, NgxDatatableModule, FormsModule, AutofocusDirective, NgbTooltip, NgClass]
 })
 export class TodoDemoComponent implements OnInit, OnDestroy {
   private alertService = inject(AlertService);
-  private translationService = inject(AppTranslationService);
   private localStorage = inject(LocalStoreManager);
   private authService = inject(AuthService);
   private modalService = inject(NgbModal);
@@ -94,8 +91,6 @@ export class TodoDemoComponent implements OnInit, OnDestroy {
       setTimeout(() => { this.loadingIndicator = false; }, 1500);
     });
 
-    const gT = (key: string) => this.translationService.getTranslation(key);
-
     this.columns = [
       {
         prop: 'completed',
@@ -110,13 +105,13 @@ export class TodoDemoComponent implements OnInit, OnDestroy {
       },
       {
         prop: 'name',
-        name: gT('todoDemo.management.Task'),
+        name: 'Task',
         width: 100,
         cellTemplate: this.nameTemplate()
       },
       {
         prop: 'description',
-        name: gT('todoDemo.management.Description'),
+        name: 'Description',
         width: 300,
         cellTemplate: this.descriptionTemplate()
       },

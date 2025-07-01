@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy, inject, Renderer2 } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
 import { ToastaService, ToastaConfig, ToastOptions, ToastData, ToastaModule } from 'ngx-toasta';
 import { NgbCollapseModule, NgbModal, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 
@@ -25,7 +24,7 @@ declare let alertify: Alertify;
     styleUrl: './app.component.scss',
     imports: [
         ToastaModule, RouterLink, RouterLinkActive, NgbCollapseModule, NgbPopover, NotificationsViewerComponent,
-        RouterOutlet, TranslateModule
+        RouterOutlet
     ]
 })
 export class AppComponent implements OnInit, OnDestroy {
