@@ -5,7 +5,6 @@ import { NgSelectComponent, NgOptionComponent } from '@ng-select/ng-select';
 import { AlertService, DialogType, MessageSeverity } from '../../services/alert.service';
 import { ConfigurationService } from '../../services/configuration.service';
 import { AccountService } from '../../services/account.service';
-import { ThemeManager } from '../../services/theme-manager';
 import { Utilities } from '../../services/utilities';
 import { Permissions } from '../../models/permission.model';
 
@@ -18,7 +17,6 @@ import { Permissions } from '../../models/permission.model';
 export class UserPreferencesComponent {
   private alertService = inject(AlertService);
   private accountService = inject(AccountService);
-  themeManager = inject(ThemeManager);
   configurations = inject(ConfigurationService);
 
   reloadFromServer() {

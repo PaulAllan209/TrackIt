@@ -56,24 +56,6 @@
   </div>
 
   <div class="row">
-    <label for="defaultTheme" class="col-sm-3 col-form-label">Theme: </label>
-    <div class="col-sm-4">
-      <ng-select id="defaultTheme" [(ngModel)]="configurations.themeId" [searchable]="false" [clearable]="false" class="form-control theme-picker">
-        @for (theme of themeManager.themes; track theme) {
-          <ng-option [value]="theme.id">
-            <div class="theme-item" style="background-color: {{theme.background}}; color: {{theme.color}}">
-              {{theme.name}} <span class="small">{{theme.isDark ? '(Dark)' : ''}}</span>
-            </div>
-          </ng-option>
-        }
-      </ng-select>
-    </div>
-    <div class="col-sm-5">
-      <p class="form-control-plaintext text-muted small">Select the default color theme for your account</p>
-    </div>
-  </div>
-
-  <div class="row">
     <div class="col-md-12">
       <hr class="hr-separator info-separator" />
     </div>

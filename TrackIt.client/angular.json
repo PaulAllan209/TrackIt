@@ -35,58 +35,6 @@
             "styles": [
               {
                 "input": "src/styles.scss"
-              },
-              {
-                "input": "src/app/assets/themes/cerulean.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/cosmo.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/flatly.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/journal.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/lumen.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/minty.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/pulse.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/sketchy.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/slate.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/solar.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/spacelab.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/superhero.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/united.scss",
-                "inject": false
               }
             ],
             "stylePreprocessorOptions": {
@@ -166,58 +114,6 @@
             "styles": [
               {
                 "input": "src/styles.scss"
-              },
-              {
-                "input": "src/app/assets/themes/cerulean.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/cosmo.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/flatly.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/journal.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/lumen.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/minty.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/pulse.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/sketchy.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/slate.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/solar.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/spacelab.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/superhero.scss",
-                "inject": false
-              },
-              {
-                "input": "src/app/assets/themes/united.scss",
-                "inject": false
               }
             ],
             "scripts": [],
