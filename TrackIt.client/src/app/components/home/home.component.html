@@ -6,7 +6,7 @@
 <div>
   <div #widgetsContainer cdkDropList (cdkDropListDropped)="drop($event)" class="row">
     @if (!configurations.showDashboardStatistics && !configurations.showDashboardNotifications &&
-         !configurations.showDashboardTodo && !configurations.showDashboardBanner) {
+         !configurations.showDashboardTodo) {
       <div class="col-12 my-5">
         <div class="card card-body bg-light">
           <h4 class="text-muted text-center text-link">
@@ -53,17 +53,6 @@
         <div #dragPlaceholder *cdkDragPlaceholder class="widget-container-placeholder mb-4"
              [style.minHeight.px]="getPlaceholderMinHeight(dragPlaceholder, dashboardTodo)"></div>
         <app-todo-demo></app-todo-demo>
-      </div>
-    }
-
-    @if (configurations.showDashboardBanner) {
-      <div id="dashboardBanner" #dashboardBanner class="col-12 mb-4 widget-container no-shadow px-0"
-           cdkDrag [cdkDragStartDelay]="dragStartDelay">
-        <button type="button" class="btn-close" aria-label="Close" title="Close"
-                (click)="configurations.showDashboardBanner = false"></button>
-        <div #dragPlaceholder *cdkDragPlaceholder class="widget-container-placeholder mb-4"
-             [style.minHeight.px]="getPlaceholderMinHeight(dragPlaceholder, dashboardBanner)"></div>
-        <app-banner-demo></app-banner-demo>
       </div>
     }
   </div>
