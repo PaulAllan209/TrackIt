@@ -16,7 +16,26 @@ using TrackIt.Server.Extensions;
 using TrackIt.Server.Services;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
+// FOR DOCKER ENVIRONMENT ONLY SETTING UP USER SECRETS
+if (builder.Environment.EnvironmentName == "Docker")
+{
+    var args2 = Environment.GetCommandLineArgs();
+    var secretsFilePath = builder.Configuration["SECRETS_FILE_PATH"] ??
+                         (args2.Length > 0 && args2[0].StartsWith("--secretsfile=") ?
+                          args2[0].Substring("--secretsfile=".Length) : null);
+
+    if (!string.IsNullOrEmpty(secretsFilePath) && File.Exists(secretsFilePath))
+    {
+        builder.Configuration.AddJsonFile(secretsFilePath, optional: false, reloadOnChange: true);
+    }
+    else
+    {
+        Console.WriteLine("Docker environment detected but no secrets file found.");
+    }
+}
 
 /************* ADD SERVICES *************/
 

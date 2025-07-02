@@ -1,9 +1,3 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 import { Injectable, inject } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { Observable, Subject, from, throwError } from 'rxjs';

@@ -2,7 +2,7 @@
   <div class="row control-box">
     <div class="col-lg-8">
       <div class="search-box">
-        <app-search-box (searchChange)="onSearchChanged($event)" placeholder="{{'roles.management.Search' | translate}}" />
+        <app-search-box (searchChange)="onSearchChanged($event)" placeholder="Search for role..." />
       </div>
     </div>
     <div class="col-lg-4 pe-lg-5">
@@ -10,7 +10,7 @@
         @if (canManageRoles) {
           <li class="nav-item toolbaritem">
             <a class="nav-link" href="javascript:;" (click)="newRole()">
-              <i class="fa fa-plus-circle"></i> {{'roles.management.NewRole' | translate}}
+              <i class="fa fa-plus-circle"></i> New role
             </a>
           </li>
         }
@@ -37,16 +37,16 @@
   <ng-template #actionsTemplate let-row="row" let-value="value" let-i="index">
     @if (canManageRoles) {
       <a class="btn btn-link text-link btn-sm" href="javascript:;" (click)="editRole(row)">
-        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> {{'roles.management.Edit' | translate}}
+        <i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit
       </a>
       |
       <a class="btn btn-link text-link btn-sm" href="javascript:;" (click)="deleteRole(row)">
-        <i class="fa fa-trash-o" aria-hidden="true"></i> {{'roles.management.Delete' | translate}}
+        <i class="fa fa-trash-o" aria-hidden="true"></i> Delete
       </a>
     }
     @else {
       <a class="btn btn-link text-link btn-sm" href="javascript:;" (click)="editRole(row)">
-        <i class="fa fa-eye" aria-hidden="true"></i> {{'roles.management.Details' | translate}}
+        <i class="fa fa-eye" aria-hidden="true"></i> Details
       </a>
     }
   </ng-template>
@@ -54,14 +54,14 @@
   <ng-template #editorModal let-modal>
     <div class="modal-header">
       @if (canManageRoles) {
-        <h4 class="modal-title">
-          <i class="fa fa-shield"></i>
-          {{editingRoleName ? ('roles.management.EditRole' | translate:editingRoleName) : ('roles.management.NewRole' | translate)}}
-        </h4>
+      <h4 class="modal-title">
+        <i class="fa fa-shield"></i>
+        {{ editingRoleName }}
+      </h4>
       }
       @else {
         <h4 class="modal-title">
-          <i class="fa fa-shield"></i> {{'roles.management.RoleDetails' | translate:editingRoleName}}
+          <i class="fa fa-shield"></i> Details
         </h4>
       }
       <button type="button" class="btn-close fs-sm" title="Close" (click)="modal.close()" tabindex="-1"></button>

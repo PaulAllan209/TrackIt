@@ -13,7 +13,7 @@ public static class AuthHelper
             ["username"] = username,
             ["password"] = password,
             ["grant_type"] = "password",
-            ["client_id"] = "quickapp_spa",
+            ["client_id"] = "salad_spa",
             ["scope"] = "openid email phone profile offline_access roles"
         };
 

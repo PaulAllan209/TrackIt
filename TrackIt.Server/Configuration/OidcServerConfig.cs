@@ -1,10 +1,4 @@
-﻿// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
-using OpenIddict.Abstractions;
+﻿using OpenIddict.Abstractions;
 using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace TrackIt.Server.Configuration
@@ -12,7 +6,7 @@ namespace TrackIt.Server.Configuration
     public static class OidcServerConfig
     {
         public const string ServerName = "TrackIt API";
-        public const string QuickAppClientID = "quickapp_spa";
+        public const string SaladClientID = "salad_spa";
         public const string SwaggerClientID = "swagger_ui";
 
         public static async Task RegisterClientApplicationsAsync(IServiceProvider provider)
@@ -20,11 +14,11 @@ namespace TrackIt.Server.Configuration
             var manager = provider.GetRequiredService<IOpenIddictApplicationManager>();
 
             // Angular SPA Client
-            if (await manager.FindByClientIdAsync(QuickAppClientID) is null)
+            if (await manager.FindByClientIdAsync(SaladClientID) is null)
             {
                 await manager.CreateAsync(new OpenIddictApplicationDescriptor
                 {
-                    ClientId = QuickAppClientID,
+                    ClientId = SaladClientID,
                     ClientType = ClientTypes.Public,
                     DisplayName = "TrackIt SPA",
                     Permissions =

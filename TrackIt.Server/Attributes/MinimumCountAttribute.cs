@@ -1,10 +1,4 @@
-﻿// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
-using System.Collections;
+﻿using System.Collections;
 using System.ComponentModel.DataAnnotations;
 
 namespace TrackIt.Server.Attributes

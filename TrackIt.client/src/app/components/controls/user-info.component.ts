@@ -1,13 +1,6 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 import { Component, OnInit, Input, inject, input, output, viewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgModel, NgForm, FormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
 import { NgSelectComponent, NgLabelTemplateDirective, NgOptionTemplateDirective } from '@ng-select/ng-select';
 
 import { AlertService, MessageSeverity } from '../../services/alert.service';
@@ -27,7 +20,7 @@ import { EqualValidator } from '../../directives/equal-validator.directive';
   styleUrl: './user-info.component.scss',
   imports: [
     FormsModule, AutofocusDirective, NgClass, EqualValidator, NgSelectComponent, NgLabelTemplateDirective,
-    NgOptionTemplateDirective, TranslateModule
+    NgOptionTemplateDirective
   ]
 })
 export class UserInfoComponent implements OnInit {

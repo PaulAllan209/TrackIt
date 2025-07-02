@@ -31,11 +31,14 @@ services:
       dockerfile: TrackIt.Server/Dockerfile
     ports:
       - "5001:8080"
+    volumes:
+      - ./secrets.json:/app/secrets.json:ro
     depends_on:
       track-it-azure-sql-server:
         condition: service_healthy
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
+      - SECRETS_FILE_PATH=/app/secrets.json
     networks:
       - trackit-network
 

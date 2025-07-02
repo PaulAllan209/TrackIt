@@ -1,18 +1,10 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 import { Component, OnInit, OnDestroy, TemplateRef, inject, input, viewChild } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { Subscription } from 'rxjs';
-import { TranslateModule } from '@ngx-translate/core';
 import { TableColumn, NgxDatatableModule } from '@siemens/ngx-datatable';
 
 import { AlertService, DialogType, MessageSeverity } from '../../services/alert.service';
-import { AppTranslationService } from '../../services/app-translation.service';
 import { NotificationService } from '../../services/notification.service';
 import { AccountService } from '../../services/account.service';
 import { Permissions } from '../../models/permission.model';
@@ -23,11 +15,10 @@ import { Notification } from '../../models/notification.model';
   selector: 'app-notifications-viewer',
   templateUrl: './notifications-viewer.component.html',
   styleUrl: './notifications-viewer.component.scss',
-  imports: [NgxDatatableModule, NgbTooltip, NgClass, TranslateModule]
+  imports: [NgxDatatableModule, NgbTooltip, NgClass]
 })
 export class NotificationsViewerComponent implements OnInit, OnDestroy {
   private alertService = inject(AlertService);
-  private translationService = inject(AppTranslationService);
   private accountService = inject(AccountService);
   private notificationService = inject(NotificationService);
 
@@ -59,12 +50,10 @@ export class NotificationsViewerComponent implements OnInit, OnDestroy {
         { prop: 'header', cellTemplate: this.contentHeaderTemplate(), width: 200, resizeable: false, sortable: false, draggable: false },
       ];
     } else {
-      const gT = (key: string) => this.translationService.getTranslation(key);
-
       this.columns = [
         { prop: '', name: '', width: 10, headerTemplate: this.statusHeaderTemplate(), cellTemplate: this.statusTemplate(), resizeable: false, canAutoResize: false, sortable: false, draggable: false },
-        { prop: 'date', name: gT('notifications.Date'), cellTemplate: this.dateTemplate(), width: 30 },
-        { prop: 'body', name: gT('notifications.Notification'), cellTemplate: this.contenBodytTemplate(), width: 500 },
+        { prop: 'date', name: 'Date', cellTemplate: this.dateTemplate(), width: 30 },
+        { prop: 'body', name: 'Notification', cellTemplate: this.contenBodytTemplate(), width: 500 },
         { name: '', width: 80, cellTemplate: this.actionsTemplate(), resizeable: false, canAutoResize: false, sortable: false, draggable: false }
       ];
     }

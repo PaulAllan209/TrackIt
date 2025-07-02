@@ -1,21 +1,10 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 import { AfterViewInit, Component, ElementRef, inject, viewChild } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragPlaceholder } from '@angular/cdk/drag-drop';
-import { TranslateModule } from '@ngx-translate/core';
 
-import { fadeInOut } from '../../services/animations';
 import { ConfigurationService } from '../../services/configuration.service';
 import { AuthService } from '../../services/auth.service';
-import { StatisticsDemoComponent } from '../controls/statistics-demo.component';
 import { NotificationsViewerComponent } from '../controls/notifications-viewer.component';
-import { TodoDemoComponent } from '../controls/todo-demo.component';
-import { BannerDemoComponent } from '../controls/banner-demo.component';
 
 interface WidgetIndex { element: string, index: number }
 
@@ -23,10 +12,8 @@ interface WidgetIndex { element: string, index: number }
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  animations: [fadeInOut],
   imports: [
-    CdkDropList, RouterLink, CdkDrag, CdkDragPlaceholder, StatisticsDemoComponent, NotificationsViewerComponent,
-    TodoDemoComponent, BannerDemoComponent, TranslateModule
+    CdkDropList, RouterLink, CdkDrag, CdkDragPlaceholder, NotificationsViewerComponent,
   ]
 })
 export class HomeComponent implements AfterViewInit {

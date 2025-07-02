@@ -8,11 +8,6 @@
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>https://localhost:4200</SpaProxyServerUrl>
     <Version>9.19.0</Version>
-    <Company>www.ebenmonney.com</Company>
-    <Authors>$(Company)</Authors>
-    <Description>ASPNET Core 9.0 - Angular 19 startup template for Quick Application Development</Description>
-    <Copyright>Copyright © 2024 www.ebenmonney.com</Copyright>
-    <PackageProjectUrl>https://www.ebenmonney.com/quickapp</PackageProjectUrl>
     <UserSecretsId>3869a621-48ff-493d-b308-448806acf233</UserSecretsId>
   </PropertyGroup>
 
@@ -63,7 +58,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="TrackIt.Api.IntegrationTests"/>
+    <InternalsVisibleTo Include="TrackIt.Api.IntegrationTests" />
   </ItemGroup>
 
 </Project>

@@ -6,7 +6,7 @@
       <div class="row">
         <div class="col-sm-5">
           <div class="row">
-            <label class="col-form-label col-lg-3" for="roleName">{{'roles.editor.Name' | translate}}</label>
+            <label class="col-form-label col-lg-3" for="roleName">Name</label>
             <div class="col-lg-9">
               <input [disabled]="!canManageRoles" type="text" id="roleName" name="roleName" placeholder="Enter role name" class="form-control"
                      [ngClass]="{'is-valid': f.submitted && roleName.valid, 'is-invalid' : f.submitted && !roleName.valid}"
@@ -16,7 +16,7 @@
         </div>
         <div class="col-sm-7">
           <div class="row">
-            <label class="col-form-label col-lg-3" for="roleDescription">{{'roles.editor.Description' | translate}}</label>
+            <label class="col-form-label col-lg-3" for="roleDescription">Description</label>
             <div class="col-lg-9">
               <input [disabled]="!canManageRoles" type="text" id="roleDescription" name="roleDescription"
                      placeholder="Enter role description" class="form-control" [(ngModel)]="roleEdit.description" />
@@ -27,9 +27,9 @@
       <div class="row">
         <div class="col-12">
           @if (showValidationErrors && f.submitted && !roleName.valid) {
-            <span class="invalid-feedback">
-              {{'roles.editor.RoleNameRequired' | translate}}
-            </span>
+          <span class="invalid-feedback">
+            Role name is required (minimum of 2 and maximum of 200 characters)
+          </span>
           }
         </div>
       </div>
@@ -71,9 +71,9 @@
           @if (canManageRoles) {
             <div class="float-start">
               <a (click)="selectAll()" href="javascript:;" class="btn btn-link text-link px-1">
-                {{'roles.editor.SelectAll' | translate}}
+                Select All
               </a>|<a (click)="selectNone()" href="javascript:;" class="btn btn-link text-link px-1">
-                {{'roles.editor.SelectNone' | translate}}
+                Select none
               </a>
             </div>
           }
@@ -82,19 +82,19 @@
           <div ngPreserveWhitespaces class="float-end">
             @if (canManageRoles) {
               <button type="button" (click)="cancel()" class="btn btn-danger" [disabled]="isSaving">
-                <i class='fa fa-times'></i> {{'roles.editor.Cancel' | translate}}
+                <i class='fa fa-times'></i> Cancel
               </button>
 
               <button type="submit" class="btn btn-primary" [disabled]="isSaving">
                 @if (isSaving) {
-                  <i class='fa fa-circle-o-notch fa-spin'></i> {{'roles.editor.Saving' | translate}}
+                  <i class='fa fa-circle-o-notch fa-spin'></i> Saving
                 }@else {
-                  <i class='fa fa-save'></i> {{'roles.editor.Save' | translate}}
+                  <i class='fa fa-save'></i> Save
                 }
               </button>
             }
             @else {
-              <button type="button" (click)="cancel()" class="btn btn-outline-secondary">{{'roles.editor.Close' | translate}}</button>
+              <button type="button" (click)="cancel()" class="btn btn-outline-secondary">Close</button>
             }
           </div>
         </div>

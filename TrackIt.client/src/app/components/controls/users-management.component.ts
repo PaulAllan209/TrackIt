@@ -1,17 +1,9 @@
-// ---------------------------------------
-// Email: quickapp@ebenmonney.com
-// Templates: www.ebenmonney.com/templates
-// (c) 2024 www.ebenmonney.com/mit-license
-// ---------------------------------------
-
 import { Component, OnInit, TemplateRef, inject, viewChild } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { TableColumn, NgxDatatableModule } from '@siemens/ngx-datatable';
-import { TranslateModule } from '@ngx-translate/core';
 
 import { AlertService, DialogType, MessageSeverity } from '../../services/alert.service';
-import { AppTranslationService } from '../../services/app-translation.service';
 import { AccountService } from '../../services/account.service';
 import { Utilities } from '../../services/utilities';
 import { User } from '../../models/user.model';
@@ -29,11 +21,10 @@ interface UserIndex extends User {
   selector: 'app-users-management',
   templateUrl: './users-management.component.html',
   styleUrl: './users-management.component.scss',
-  imports: [SearchBoxComponent, NgxDatatableModule, UserInfoComponent, TranslateModule]
+  imports: [SearchBoxComponent, NgxDatatableModule, UserInfoComponent]
 })
 export class UsersManagementComponent implements OnInit {
   private alertService = inject(AlertService);
-  private translationService = inject(AppTranslationService);
   private accountService = inject(AccountService);
   private modalService = inject(NgbModal);
 
@@ -60,16 +51,14 @@ export class UsersManagementComponent implements OnInit {
   userEditor: UserInfoComponent | null = null;
 
   ngOnInit() {
-    const gT = (key: string) => this.translationService.getTranslation(key);
-
     this.columns = [
       { prop: 'index', name: '#', width: 40, cellTemplate: this.indexTemplate(), canAutoResize: false },
-      { prop: 'jobTitle', name: gT('users.management.Title'), width: 50 },
-      { prop: 'userName', name: gT('users.management.UserName'), width: 90, cellTemplate: this.userNameTemplate() },
-      { prop: 'fullName', name: gT('users.management.FullName'), width: 120 },
-      { prop: 'email', name: gT('users.management.Email'), width: 140 },
-      { prop: 'roles', name: gT('users.management.Roles'), width: 120, cellTemplate: this.rolesTemplate() },
-      { prop: 'phoneNumber', name: gT('users.management.PhoneNumber'), width: 100 }
+      { prop: 'jobTitle', name: 'Title', width: 50 },
+      { prop: 'userName', name: 'UserName', width: 90, cellTemplate: this.userNameTemplate() },
+      { prop: 'fullName', name: 'FullName', width: 120 },
+      { prop: 'email', name: 'Email', width: 140 },
+      { prop: 'roles', name: 'Roles', width: 120, cellTemplate: this.rolesTemplate() },
+      { prop: 'phoneNumber', name: 'PhoneNumber', width: 100 }
     ];
 
     if (this.canManageUsers) {
