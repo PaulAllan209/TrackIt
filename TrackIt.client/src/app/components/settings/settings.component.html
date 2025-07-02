@@ -19,18 +19,6 @@
           </div>
         </ng-template>
       </li>
-      <li [ngbNavItem]="preferencesTab">
-        <a ngbNavLink routerLink="." [fragment]="preferencesTab">
-          <i class="fa fa-sliders fa-fw" aria-hidden="true"></i> Preferences
-        </a>
-        <ng-template ngbNavContent>
-          <h4>User Preferences</h4>
-          <hr class="hr-separator" />
-          <div class="content-container ps-lg-2">
-            <app-user-preferences></app-user-preferences>
-          </div>
-        </ng-template>
-      </li>
       @if (canViewUsers) {
         <li [ngbNavItem]="usersTab">
           <a ngbNavLink routerLink="." [fragment]="usersTab">

@@ -6,7 +6,6 @@ import { Subscription } from 'rxjs';
 import { AccountService } from '../../services/account.service';
 import { Permissions } from '../../models/permission.model';
 import { UserInfoComponent } from '../controls/user-info.component';
-import { UserPreferencesComponent } from '../controls/user-preferences.component';
 import { UsersManagementComponent } from '../controls/users-management.component';
 import { RolesManagementComponent } from '../controls/roles-management.component';
 
@@ -16,7 +15,7 @@ import { RolesManagementComponent } from '../controls/roles-management.component
     styleUrl: './settings.component.scss',
     imports: [
         RouterLink, NgbNavModule,
-        UserInfoComponent, UserPreferencesComponent, UsersManagementComponent, RolesManagementComponent
+        UserInfoComponent, UsersManagementComponent, RolesManagementComponent
     ]
 })
 export class SettingsComponent implements OnInit, AfterViewInit, OnDestroy {
