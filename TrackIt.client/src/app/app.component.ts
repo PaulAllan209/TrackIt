@@ -5,18 +5,17 @@ import { ToastaService, ToastaConfig, ToastOptions, ToastData, ToastaModule } fr
 import { NgbCollapseModule, NgbModal, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
 
 import { AlertService, AlertDialog, DialogType, AlertCommand, MessageSeverity } from './services/alert.service';
+import { SweetAlertService } from './services/sweet-alert.service';
 import { NotificationService } from './services/notification.service';
 import { AccountService } from './services/account.service';
 import { LocalStoreManager } from './services/local-store-manager.service';
 import { AppTitleService } from './services/app-title.service';
 import { AuthService } from './services/auth.service';
 import { ConfigurationService } from './services/configuration.service';
-import { Alertify } from './models/Alertify';
 import { Permissions } from './models/permission.model';
 import { LoginComponent } from './components/login/login.component';
 import { NotificationsViewerComponent } from './components/controls/notifications-viewer.component';
 
-declare let alertify: Alertify;
 
 @Component({
     selector: 'app-root',
@@ -32,6 +31,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private toastaConfig = inject(ToastaConfig);
   private accountService = inject(AccountService);
   private alertService = inject(AlertService);
+  private sweetAlertService = inject(SweetAlertService);
   private modalService = inject(NgbModal);
   private notificationService = inject(NotificationService);
   private authService = inject(AuthService);
@@ -192,19 +192,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   showDialog(dialog: AlertDialog) {
-    alertify.set({
-      labels: {
-        ok: dialog.okLabel || 'OK',
-        cancel: dialog.cancelLabel || 'Cancel'
-      }
-    });
-
     switch (dialog.type) {
       case DialogType.alert:
-        alertify.alert(dialog.message);
+        this.sweetAlertService.alert(dialog.message);
         break;
       case DialogType.confirm:
-        alertify.confirm(dialog.message, ok => {
+        this.sweetAlertService.confirm(dialog.message, ok => {
           if (ok) {
             if (dialog.okCallback)
               dialog.okCallback();
@@ -216,7 +209,7 @@ export class AppComponent implements OnInit, OnDestroy {
         });
         break;
       case DialogType.prompt:
-        alertify.prompt(dialog.message, (ok, val) => {
+        this.sweetAlertService.prompt(dialog.message, (ok, val) => {
           if (ok) {
             if (dialog.okCallback)
               dialog.okCallback(val);

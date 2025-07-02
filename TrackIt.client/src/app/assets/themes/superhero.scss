@@ -34,10 +34,6 @@ $table-bg-scale: 0% !default; // Fix for deprecation: https://sass-lang.com/d/fu
   --bs-tooltip-color: #fff;
 }
 
-.alertify-message {
-  color: var(--bs-secondary);
-}
-
 .bg-light {
   background-color: var(--bs-dark) !important;
 }

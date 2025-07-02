@@ -97,9 +97,7 @@
                 ]
               }
             },
-            "scripts": [
-              "src/app/assets/scripts/alertify.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
