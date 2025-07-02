@@ -5,8 +5,7 @@
 </header>
 <div>
   <div #widgetsContainer cdkDropList (cdkDropListDropped)="drop($event)" class="row">
-    @if (!configurations.showDashboardStatistics && !configurations.showDashboardNotifications &&
-         !configurations.showDashboardTodo) {
+    @if (!configurations.showDashboardNotifications) {
       <div class="col-12 my-5">
         <div class="card card-body bg-light">
           <h4 class="text-muted text-center text-link">
@@ -20,20 +19,6 @@
       </div>
     }
 
-    @if (configurations.showDashboardStatistics) {
-      <div id="dashboardStatistics" #dashboardStatistics class="col-12 mb-4 widget-container px-0"
-           cdkDrag [cdkDragStartDelay]="dragStartDelay">
-        <button type="button" class="btn-close" aria-label="Close" title="Close"
-                (click)="configurations.showDashboardStatistics = false"></button>
-        <div class="card card-body bg-light">
-          <h5 class="text-muted d-inline-block">Some Important Stuff</h5>
-          <div #dragPlaceholder *cdkDragPlaceholder class="widget-container-placeholder mb-4"
-               [style.minHeight.px]="getPlaceholderMinHeight(dragPlaceholder, dashboardStatistics)"></div>
-          <app-statistics-demo></app-statistics-demo>
-        </div>
-      </div>
-    }
-
     @if (configurations.showDashboardNotifications) {
       <div id="dashboardNotifications" #dashboardNotifications class="col-12 mb-4 widget-container px-0"
            cdkDrag [cdkDragStartDelay]="dragStartDelay">
@@ -42,17 +27,6 @@
         <div #dragPlaceholder *cdkDragPlaceholder class="widget-container-placeholder mb-4"
              [style.minHeight.px]="getPlaceholderMinHeight(dragPlaceholder, dashboardNotifications)"></div>
         <app-notifications-viewer></app-notifications-viewer>
-      </div>
-    }
-
-    @if (configurations.showDashboardTodo) {
-      <div id="dashboardTodo" #dashboardTodo class="col-12 mb-4 pt-1 widget-container px-0"
-           cdkDrag [cdkDragStartDelay]="dragStartDelay">
-        <button type="button" class="btn-close extra-down" aria-label="Close" title="Close"
-                (click)="configurations.showDashboardTodo = false"></button>
-        <div #dragPlaceholder *cdkDragPlaceholder class="widget-container-placeholder mb-4"
-             [style.minHeight.px]="getPlaceholderMinHeight(dragPlaceholder, dashboardTodo)"></div>
-        <app-todo-demo></app-todo-demo>
       </div>
     }
   </div>

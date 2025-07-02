@@ -4,9 +4,7 @@ import { CdkDragDrop, moveItemInArray, CdkDropList, CdkDrag, CdkDragPlaceholder 
 
 import { ConfigurationService } from '../../services/configuration.service';
 import { AuthService } from '../../services/auth.service';
-import { StatisticsDemoComponent } from '../controls/statistics-demo.component';
 import { NotificationsViewerComponent } from '../controls/notifications-viewer.component';
-import { TodoDemoComponent } from '../controls/todo-demo.component';
 
 interface WidgetIndex { element: string, index: number }
 
@@ -15,8 +13,7 @@ interface WidgetIndex { element: string, index: number }
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   imports: [
-    CdkDropList, RouterLink, CdkDrag, CdkDragPlaceholder, StatisticsDemoComponent, NotificationsViewerComponent,
-    TodoDemoComponent
+    CdkDropList, RouterLink, CdkDrag, CdkDragPlaceholder, NotificationsViewerComponent,
   ]
 })
 export class HomeComponent implements AfterViewInit {
